@@ -32,7 +32,7 @@ define [ 'marionette'], ( Marionette )->
     RouterAPI =
     #Start Sub App
         showValues:(params={})->
-            
+            console.log "aaa"
             msgbus.showApp 'header'
             .insideRegion  App.headerRegion
                 .withOptions()
