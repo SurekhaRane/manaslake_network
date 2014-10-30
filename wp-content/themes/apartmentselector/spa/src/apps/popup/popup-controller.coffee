@@ -10,19 +10,42 @@ define [ 'extm', 'src/apps/popup/popup-view' ], ( Extm, PopupView )->
             
 
 
-        _getPopupView:(Collection)->
+        _getPopupView:(Collection,classnamearr)->
             new PopupView
                 collection : Collection
+                templateHelpers:
+                        selection :classnamearr
 
 
 
         _getUnitsCountCollection:(modelstring)->
             cookeArray = modelstring
             unitModelArray = []
+            classnamearr = []
+            roomcoll = []
+            actualroom = []
+            actroomColl = ""
+            act = []
+            if cookeArray.length != 0
+                for element in cookeArray
+
+                    unitModel = element
+                    unitVariantModel = App.master.unit_variant.findWhere({id:unitModel.get 'unitVariant'})
+                    roomSizesObject = unitVariantModel.get 'roomsizes'
+                    
+                    roomSizesArray = $.map(roomSizesObject, (index,value1)->
+                           roomcoll.push({id:index.room_type_id,name:index.room_type})
+
+
+
+
+                    )
+            roomcoll = _.uniq(roomcoll)
             floorLayoutimage = ""
             if cookeArray.length != 0
                 for element in cookeArray
                     unitModel = element
+                    actualroom = []
                     buildingModel = App.master.building.findWhere({id:unitModel.get 'building'})
                     exceptionObject = buildingModel.get 'floorexceptionpositions'
                     $.each(exceptionObject, (index,value1)->
@@ -76,11 +99,13 @@ define [ 'extm', 'src/apps/popup/popup-view' ], ( Extm, PopupView )->
                     unitVariantModel = App.master.unit_variant.findWhere({id:unitModel.get 'unitVariant'})
                     unitModel.set "sellablearea" ,unitVariantModel.get 'sellablearea'
                     unitModel.set "carpetarea" ,unitVariantModel.get 'carpetarea'
+                    unitModel.set "terracearea" ,unitVariantModel.get 'terracearea'
                     unitModel.set "unitTypeName" ,unitTypeModelName[0]
                     unitModel.set "buidlingName" ,buildingModel.get 'name'
                     unitModel.set 'TwoDimage' , unitVariantModel.get('url2dlayout_image')
                     unitModel.set 'ThreeDimage' , unitVariantModel.get('url3dlayout_image')
                     unitModel.set 'floorLayoutimage' , floorLayoutimage
+                    unitModel.set 'BuildingPositionimage' , buildingModel.get('positioninproject').image_url
                     if unitModel.get('views_name') != ""
                         viewsArray = unitModel.get('views_name')
                         for element in viewsArray
@@ -101,7 +126,8 @@ define [ 'extm', 'src/apps/popup/popup-view' ], ( Extm, PopupView )->
                     unitModel.set 'facings',facingModelArray.join(',')
                     roomSizesObject = unitVariantModel.get 'roomsizes'
                     roomsizearray = []
-                    roomTypeArr = [68,71,72,70,66]
+                    # roomTypeArr = [68,71,72,70,66]
+                    roomTypeArr = roomcoll
                     roomSizesArray = $.map(roomSizesObject, (index,value1)->
                         [index]
 
@@ -122,36 +148,72 @@ define [ 'extm', 'src/apps/popup/popup-view' ], ( Extm, PopupView )->
                     roomsizesCollection = new Backbone.Collection roomSizesArray
                     $.each(roomTypeArr, (ind,val)->
                         roomsizearr = []
-                        roomtype = roomsizesCollection.where({room_type_id:parseInt(val)})
-                        ii = 0
-                        if parseInt(val) == 70
-                            if ii > 0
-                                terraceoptions = ""
+                        roomtypename = ''
+                        roomtypeid = val.id
+                        roomtypename = val.name
+                        roomtype = roomsizesCollection.where({room_type_id:parseInt(val.id)})
+                        if roomtype != undefined
                             $.each(roomtype, (index1,value1)->
-                                roomsizearr.push({room_size:value1.get('room_size'),terace:terraceoptions})
-                                ii++
-
-                            )
-                        else
-                            $.each(roomtype, (index1,value1)->
-                                roomsizearr.push({room_size:value1.get('room_size')})
+                                
+                                
+                                roomsizearr.push({room_size:value1.get('room_size'),room_type:value1.get('room_type')})
 
 
                             )
-
-                        roomsizearr.sort( (a,b)->
-                            b.room_size - a.room_size
+                            roomsizearr.sort( (a,b)->
+                                b.room_size - a.room_size
 
                             )
-                        if roomsizearr.length == 0
-                            roomsizearr.push({room_size:"----------"})
-                        mainArr.push({subarray:roomsizearr})
+                            if roomsizearr.length ==0
+                                roomsizearr.push({room_size:'----'})
+                            mainArr.push({id:roomtypeid,name:roomtypename,subarray:roomsizearr})
 
+                        
+
+
+                    )
+                    
+                    actroom = []
+                    $.each(mainArr, (ind,val)->
+                        classnamearr.push({id:val.id, name:val.name,subarray:val.subarray})
+                        actroom.push({id:val.id, name:val.name,subarray:val.subarray})
+                       
+
+
+                    )
+                    id = ""
+                    actroomColl =  new Backbone.Collection actroom
+                    actualroom = []
+                    coll = []
+                    
+                    $.each(roomcoll, (inde,value)->
+                        classname = ''
+                        coll = []
+                        $.each(classnamearr, (ind,val)->
+                            if parseInt(val.id) == parseInt(value.id)
+                                if val.subarray != '----'
+                                    coll.push({id:value.id,name:val.name,subarray:val.subarray,classname:classname})
 
                         )
+
                         
+                        if coll.length == 0
+                            id = actroomColl.get value
+                            
+
+                       
+
+                    )
+                    act = []
+                    actroomColl.each (item)->
+                        if id != item.get('id')
+                            if item.get('subarray') != '----'
+                                act.push({id:item.get('id'),name:item.get('name'),subarray:item.get('subarray')})
+                            else
+                                act.push({id:item.get('id'),name:item.get('name'),subarray:"-----------"}) 
+
                     
-                    unitModel.set 'mainArr',mainArr
+                    unitModel.set 'mainArr',act
                     
 
                     
@@ -159,7 +221,7 @@ define [ 'extm', 'src/apps/popup/popup-view' ], ( Extm, PopupView )->
                 
                 unitCollection = new Backbone.Collection unitModelArray
                 
-                @view = view = @_getPopupView unitCollection
+                @view = view = @_getPopupView unitCollection , act
                 @show view
 
 
@@ -175,7 +237,7 @@ define [ 'extm', 'src/apps/popup/popup-view' ], ( Extm, PopupView )->
                     $.ajax(
                         method: "POST" ,
                         url : AJAXURL+'?action=get_unit_single_details',
-                        data : 'id='+unitModel.get('id'),
+                        data : 'id='+unitModel.get('id')+'&building='+unitModel.get('building'),
                         success :(result)-> 
                             i++
                             unitModel1 = App.master.unit.findWhere({id:parseInt(result.id)})

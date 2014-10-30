@@ -1,38 +1,111 @@
 <?php
 
-function get_payment_plan_milestones($payment_plan){
+function get_payment_plan_milestones($payment_plan,$building=0){
 	global $wpdb;
 	
 	$query= "SELECT option_value FROM ".$wpdb->prefix ."options where   option_id  = '$payment_plan'";
  
    	$data = $wpdb->get_var($query);
+    
  $data = unserialize($data) ;
+$towers = $data["towers"];
+$archive = $data['archive'];
 
-   	return get_milestone_names( $data["milestones"]);
+  
+
+   	return get_milestone_names( $data["milestones"],$building,$towers,$archive);
 }
 
 
-function get_milestone_names($milestones){
+function get_milestone_names($milestones,$building,$towers,$archive){
 
 	$milestone_with_names = array();
 
 	$all_milestones = get_milestones();
  
-	foreach($milestones as $milestone){
+	//foreach($milestones as $milestone){
 
 		foreach($all_milestones as $all_milestone_item){
  
-			if($all_milestone_item["id"]==$milestone["milestone"]){
+			//if($all_milestone_item["id"]==$milestone["milestone"]){
+
+        
 
 				$milestone["name"] = $all_milestone_item["name"];
-			}
+			//}
 		}
 
-		$milestone_with_names[] = $milestone;
-	}
 
-	return $milestone_with_names;
+		$milestone_with_names[] = $milestone;
+	//}
+	return $all_milestones;
 }
+function get_payment_plans_building($id){
+
+	$payment_plans = array();
+
+	$payment_plans = maybe_unserialize(get_option('payment_plans'));
+
+    $payment_plans = implode(", ",$payment_plans);
+
+    $building = (get_building_by_id($id));
+
+    $building_milestone = $building["milestone"];
+
+    global $wpdb;
+
+    $query= "SELECT option_name as  name, option_id as id , option_value as  value  FROM ".$wpdb->prefix ."options where option_id in($payment_plans)  ";
+ 	
+   	$payment_plans = $wpdb->get_results($query,ARRAY_A);
+ 
+ 	 $payment_plans_data = array();
+ 	 $miles_stone_data = array();
+   	foreach($payment_plans as $payment_plan){ 
+   			$option_value= maybe_unserialize($payment_plan["value"]);
+   			$miles_stones =  $option_value["milestones"] ;
+       $milestonearr = array();
+
+   			$milestones = $option_value["milestones"] ;
+
+        if(($option_value["building"] != "") && ($option_value["archive"] != null && intval($option_value["archive"]) == 0  ))
+        {
+
+          foreach($milestones as $milestone){
+            array_push($milestonearr, intval($milestone['milestone']));
+            $milestones_data[] = array('sort_index'=>intval($milestone['sort_index']),'milestone'=>intval($milestone['milestone']),'payment_percentage'=>intval($milestone['payment_percentage']));
+        }
+        if(in_array(intval($building_milestone), $milestonearr)){ 
+        $payment_plans_data[] = array("id"=>$payment_plan["id"],
+                      "name"=>$payment_plan["name"],
+                      "milestones"=>$milestones_data ); 
+      }
+
+
+        } 
+   			else
+        {
+   			if($option_value["archive"] != null && intval($option_value["archive"]) == 0  ) {
+   			if($option_value["towers"] != null && in_array($id, $option_value["towers"])){
+			$milestones_data = array();
+   			foreach($milestones as $milestone){
+            array_push($milestonearr, intval($milestone['milestone']));
+   					$milestones_data[] = array('sort_index'=>intval($milestone['sort_index']),'milestone'=>intval($milestone['milestone']),'payment_percentage'=>intval($milestone['payment_percentage']));
+   			}
+   			 
+   			if(in_array(intval($building_milestone), $milestonearr)){ 
+        $payment_plans_data[] = array("id"=>$payment_plan["id"],
+                      "name"=>$payment_plan["name"],
+                      "milestones"=>$milestones_data ); 
+      }
+   		}
+   
+   			}
+      }
+   		}
+   
+	return $payment_plans_data; 
+}
+
 function get_payment_plans(){
 
 	$payment_plans = array();
@@ -44,7 +117,7 @@ function get_payment_plans(){
     global $wpdb;
 
     $query= "SELECT option_name as  name, option_id as id , option_value as  value  FROM ".$wpdb->prefix ."options where option_id in($payment_plans)  ";
- 
+ 	
    	$payment_plans = $wpdb->get_results($query,ARRAY_A);
  
  	 $payment_plans_data = array();
@@ -54,7 +127,8 @@ function get_payment_plans(){
    			$miles_stones =  $option_value["milestones"] ;
 
    			$milestones = $option_value["milestones"] ;
-
+   			
+   			
 			$milestones_data = array();
    			foreach($milestones as $milestone){
 
@@ -64,7 +138,8 @@ function get_payment_plans(){
    			$payment_plans_data[] = array("id"=>$payment_plan["id"],
    										"name"=>$payment_plan["name"],
    										"milestones"=>$milestones_data ); 
-   			}
+   		
+   		}
    
 	return $payment_plans_data; 
 }
@@ -120,6 +195,13 @@ function ajax_save_payment_plan(){
 
 	$payment_plan_id = $_REQUEST["payment_plan_id"];
 
+	$towers = explode(',', $_REQUEST["towers"]);
+
+	$archive = $_REQUEST["archive"];
+
+  $buildingarr = $_REQUEST["buildingarr"];
+
+
     if(payment_plan_exists($payment_plan_name,$payment_plan_id)){
 
     	$error = true;
@@ -131,7 +213,7 @@ function ajax_save_payment_plan(){
 
     	if(empty($payment_plan_id)){
     		
-    		add_option($payment_plan_name,array('milestones'=>$milestones));
+    		add_option($payment_plan_name,array('milestones'=>$milestones,'towers'=>$towers,'archive'=>$archive,'building'=>$buildingarr));
 
 	    	$payment_plan = get_option_id($payment_plan_name);
 
@@ -148,7 +230,7 @@ function ajax_save_payment_plan(){
     		update_payment_plan($payment_plan_id,$payment_plan_name);
 
     		//update the option value
-    		update_option($payment_plan_name,array('milestones'=>$milestones));
+    		update_option($payment_plan_name,array('milestones'=>$milestones,'towers'=>$towers,'archive'=>$archive,'building'=>$buildingarr));
 
 	    	 
 	    	$msg="Payment Plan Updated Successfully!";
@@ -253,8 +335,9 @@ function delete_payment_plan($payment_plan_id){
 function ajax_get_payment_plan_milestones(){
 
     $payment_plan = $_REQUEST["payment_plan"];
+    $building = $_REQUEST["buildingid"];
 
-	$payment_plan_milestones = get_payment_plan_milestones($payment_plan);
+	$payment_plan_milestones = get_payment_plan_milestones($payment_plan,$building);
 	$response = json_encode( $payment_plan_milestones );
 
 	header( "Content-Type: application/json" );

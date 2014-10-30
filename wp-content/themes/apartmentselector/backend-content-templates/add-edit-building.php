@@ -1,4 +1,4 @@
-<?
+<?php
 //form heading
 
 if(!current_user_can('manage_buildings') && !current_user_can('manage_options')){
@@ -28,10 +28,18 @@ $heading = "Edit";
 
     $building_payment_plan = $building["payment_plan"];
 
+    $query= "SELECT option_value FROM ".$wpdb->prefix ."options where   option_id  = '$building_payment_plan'";
+    
+    $data = $wpdb->get_var($query);
+    
+    $data = unserialize($data) ;
+    $towers = $data["towers"];
+    $archive = $data['archive'];
+
     $building_milestone = $building["milestone"];
 
     $building_milestone_completion = $building["milestonecompletion"];
-
+    print_r($building_milestone_completion);
     $building_views = $building["buildingviews"];
 
     $position_in_project = $building["positioninproject"];
@@ -56,18 +64,19 @@ $heading = "Edit";
     $building_floorriserange = $building["floorriserange"]; 
  
     $building_svgdata = $building["svgdata"]; 
- 
+
     if(is_array($building_floorriserange)){
  
-       $building_lowrisefrom = $building_floorriserange["low"]["start"];
-       $building_lowriseto = $building_floorriserange["low"]["end"];
+       $building_lowrisefrom = $building_floorriserange[0]["start"];
+       $building_lowriseto = $building_floorriserange[0]["end"];
        $building_lowrise_range = "Floors ".$building_lowrisefrom." - ".$building_lowriseto;
-       $building_midrisefrom = $building_floorriserange["medium"]["start"];
-       $building_midriseto = $building_floorriserange["medium"]["end"];
+       $building_midrisefrom = $building_floorriserange[1]["start"];
+       $building_midriseto = $building_floorriserange[1]["end"];
        $building_midrise_range = "Floors ".$building_midrisefrom." - ".$building_midriseto;
-       $building_highrisefrom = $building_floorriserange["high"]["start"];
-       $building_highriseto = $building_floorriserange["high"]["end"];
+       $building_highrisefrom = $building_floorriserange[2]["start"];
+       $building_highriseto = $building_floorriserange[2]["end"];
        $building_highrise_range = "Floors ".$building_highrisefrom." - ".$building_highriseto;
+ 
     }
 }
 ?>
@@ -138,16 +147,20 @@ $heading = "Edit";
     <div class="col-md-6">
         <div class="form-group">
             <label class="form-label">
-                Position in project
-                <?php var_dump($position_in_project);?>
+                Position in project 
             </label>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="input-with-icon  right">
                         <span class="btn btn-success fileinput-button">
                              
                             <span>Select file..</span>
                             <input id="fileuploadposition_in_project" class="fileuploadposition_in_project" type="file" name="files">
+                        </span>
+                        <span class="btn btn-danger fileinput-button"  id="position_in_projecttrash-image-option"  <?php if($position_in_project["id"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="position_in_project">  
+                           Delete 
+                            </a>
                         </span>
                         <input type="hidden" class="position_in_project" id="position_in_project" name="position_in_project" value="<?php echo @$position_in_project["id"];?>"> 
                         <div id="progressposition_in_project" class="progress" >
@@ -157,7 +170,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo @$position_in_project["thumbnail_url"];?>" id="image_displayposition_in_project" <?php if(@$position_in_project["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo @$position_in_project["thumbnail_url"];?>" id="image_displayposition_in_project" <?php if(@$position_in_project["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -172,13 +185,18 @@ $heading = "Edit";
                 Zoomed in image
             </label>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="input-with-icon  right">
                         <span class="btn btn-success fileinput-button">
                              
                             <span>Select file..</span>
                             <input id="fileuploadzoomed_in_image" class="fileuploadzoomed_in_image" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="zoomed_in_imagetrash-image-option"  <?php if($zoomed_in_image["id"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="zoomed_in_image">  
+                           Delete 
+                            </a>
+                        </span>
                         <input type="hidden" class="zoomed_in_image" id="zoomed_in_image" name="zoomed_in_image" value="<?php echo @$zoomed_in_image["id"];?>">
                         <div id="progresszoomed_in_image" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
@@ -187,7 +205,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo @$zoomed_in_image["thumbnail_url"];?>" id="image_displayzoomed_in_image" <?php if(@$zoomed_in_image["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo @$zoomed_in_image["thumbnail_url"];?>" id="image_displayzoomed_in_image" <?php if(@$zoomed_in_image["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -197,7 +215,7 @@ $heading = "Edit";
         </div>
     </div>
     <div style="clear:both"></div>
-    <div class="col-md-12">
+   <!-- <div class="col-md-12">
         <div class="form-group">
             <label class="form-label">
                 Payment Plan
@@ -207,22 +225,25 @@ $heading = "Edit";
 
                 <i class="">
                 </i>
-                <select class="form-control"  name="building_payment_plan" id="building_payment_plan"  >
+                <select class="form-control"  name="building_payment_plan" id="building_payment_plan"  selected-milestone="<?php echo $building_milestone;?>">
 
                     <option value="">Select</option>
                     <?php
 
-                    $payment_plans = get_payment_plans();
+                    if($building_id!= "")
+                    $payment_plans = get_payment_plans_building($building_id);
+                else
+                    $payment_plans =array();
 
                     foreach ($payment_plans as $payment_plan){
 
                         ?>
-                        <option value="<?php echo $payment_plan['id']; ?>"  <?php if($building_payment_plan==$payment_plan['id']){ echo "selected"; }?>><?php echo  $payment_plan['name']?></option>
+                        <option value="<?php echo $payment_plan['id']; ?>"<?php if($building_payment_plan==$payment_plan['id']){ echo "selected"; }?>><?php echo  $payment_plan['name']?></option>
                     <?php } ?>
-                </select>
+                </select><input type="hidden" id="buildingid" name="buildingid" value="<?php echo $building_id;?>" >
             </div>
         </div>
-    </div>
+    </div>-->
     <div class="col-md-12">
         <div class="form-group">
             <label class="form-label">
@@ -238,27 +259,21 @@ $heading = "Edit";
                         Please Select
                     </option>
                     <?php
-                    if(isset($building_payment_plan)){
- 
+                    
                     $payment_plan_milestones = get_payment_plan_milestones($building_payment_plan);
 
                     foreach ($payment_plan_milestones as $payment_plan_milestone){
 
                         ?>
-                        <option value="<?php echo $payment_plan_milestone['milestone']; ?>"  <?php if($building_milestone==$payment_plan_milestone['milestone']){ echo "selected"; }?>><?php echo  $payment_plan_milestone['name']?></option>
-                    <?php }
+                        <option value="<?php echo $payment_plan_milestone['id']; ?>"  <?php if($building_milestone==$payment_plan_milestone['id']){ echo "selected"; }?>><?php echo  $payment_plan_milestone['name']?></option>
+                    <?php }?>
 
-                    }else{
-                        ?>
-
-                        <?php
-                        } ?>
-
+                    
                 </select>
             </div>
         </div>
     </div>
-    <div id="milestone-completion" <?php if(!isset($building_payment_plan)){?>style="display:none"<?php }?>>
+    <div id="milestone-completion">
         <div class="col-md-12">
             <div class="form-group">
                 <label class="form-label">
@@ -273,12 +288,13 @@ $heading = "Edit";
                          <div class="form-group">
                              <ul class="milestone-completion form-control-list" id="milestone-completion-item-container">
                                 <?php
-                                    $payment_plan_milestones = get_payment_plan_milestones($building_payment_plan);
+                                 
+                                    $payment_plan_milestones = get_payment_plan_milestones($building_payment_plan,$building_id);
 
                                     foreach ($payment_plan_milestones as $payment_plan_milestone){
                                 
                                         if(is_array($building_milestone_completion)){
-                                            $completion_date = $building_milestone_completion[$payment_plan_milestone['milestone']];
+                                            $completion_date = $building_milestone_completion[$payment_plan_milestone['id']];
                                         }
                                 ?>
                                         <li >
@@ -288,7 +304,7 @@ $heading = "Edit";
                                                             <?php echo  $payment_plan_milestone['name']?></label> 
                                                     </div>
                                                     <div class="col-md-5">
-                                                        <input type="text"  name="milestone_completion_<?php echo  $payment_plan_milestone['milestone']?>"  class="milestone-completion-date form-control-medium"  value="<?php echo $completion_date;?>"  >
+                                                        <input type="text"  name="milestone_completion_<?php echo  $payment_plan_milestone['id']?>"  class="milestone-completion-date form-control-medium"  value="<?php echo $completion_date;?>"  >
                                                     </div>
                                                      
                                                 </div>
@@ -296,7 +312,8 @@ $heading = "Edit";
                                         </li>
                                 <?php
 
-                                }?>
+                                }
+                            ?>
                                        
                              </ul>
                          </div>
@@ -404,6 +421,11 @@ $heading = "Edit";
                             <span>Select file..</span>
                             <input type="hidden" class="svg_position_file_1" id="svg_position_file_1" name="svg_position_file_1" value="<?php echo @$building_svgdata[0]["svgfile"]["id"];?>"><input id="fileuploadsvg_position_file_1" class="fileuploadsvg_position_file_1" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="svg_position_file_1trash-image-option"  <?php if(@$building_svgdata[0]["svgfile"]["thumbnail_url"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="svg_position_file_1">  
+                           Delete 
+                            </a>
+                        </span>
                         <div id="progresssvg_position_file_1" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
@@ -411,7 +433,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo  @$building_svgdata[0]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_1" <?php if(@$building_svgdata[0]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo  @$building_svgdata[0]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_1" <?php if(@$building_svgdata[0]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -434,7 +456,7 @@ $heading = "Edit";
                                         ?>
                                         <div class='col-md-4 flatposition<?php echo $flat;?>'>
                                                 <div class='checkbox check-default' >
-                                                        <input type='checkbox' name='flatpostion-1[]' id='flatpostion<?php echo $flat;?>-1' value='<?php echo $flat;?>' <?php echo $checked;?>> <label for='flatpostion<?php echo $flat;?>-1'><?php echo $flat;?></label>
+                                                        <input type='checkbox' name='flatpostion-1[]' id='flatpostion<?php echo $flat;?>-1' value='<?php echo $flat;?>' <?php echo $checked;?> <label for='flatpostion<?php echo $flat;?>-1'><?php echo $flat;?></label>
                                                 </div>
                                         </div>
                                         <?php
@@ -458,6 +480,11 @@ $heading = "Edit";
                             <span>Select file..</span>
                             <input type="hidden" class="svg_position_file_2" id="svg_position_file_2" name="svg_position_file_2" value="<?php echo @$building_svgdata[1]["svgfile"]["id"];?>"><input id="fileuploadsvg_position_file_2" class="fileuploadsvg_position_file_2" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="svg_position_file_2trash-image-option"  <?php if(@$building_svgdata[1]["svgfile"]["thumbnail_url"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="svg_position_file_2">  
+                           Delete 
+                            </a>
+                        </span>
                         <div id="progresssvg_position_file_2" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
@@ -465,7 +492,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo  @$building_svgdata[1]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_2" <?php if(@$building_svgdata[1]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo  @$building_svgdata[1]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_2" <?php if(@$building_svgdata[1]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -487,7 +514,7 @@ $heading = "Edit";
                                         ?>
                                         <div class='col-md-4 flatposition<?php echo $flat;?>'>
                                                 <div class='checkbox check-default' >
-                                                        <input type='checkbox' name='flatpostion-2[]' id='flatpostion<?php echo $flat;?>-2' value='<?php echo $flat;?>'  <?php echo $checked;?>> <label for='flatpostion<?php echo $flat;?>-2'><?php echo $flat;?></label>
+                                                        <input type='checkbox' name='flatpostion-2[]' id='flatpostion<?php echo $flat;?>-2' value='<?php echo $flat;?>'  <?php echo $checked;?> <label for='flatpostion<?php echo $flat;?>-2'><?php echo $flat;?></label>
                                                 </div>
                                         </div>
                                         <?php
@@ -511,6 +538,11 @@ $heading = "Edit";
                             <span>Select file..</span>
                             <input type="hidden" class="svg_position_file_3" id="svg_position_file_3" name="svg_position_file_3" value="<?php echo @$building_svgdata[2]["svgfile"]["id"];?>"><input id="fileuploadsvg_position_file_3" class="fileuploadsvg_position_file_3" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="svg_position_file_3trash-image-option"  <?php if(@$building_svgdata[2]["svgfile"]["thumbnail_url"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="svg_position_file_3">  
+                           Delete 
+                            </a>
+                        </span>
                         <div id="progresssvg_position_file_3" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
@@ -518,7 +550,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo  @$building_svgdata[2]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_3" <?php if(@$building_svgdata[2]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo  @$building_svgdata[2]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_3" <?php if(@$building_svgdata[2]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -540,7 +572,7 @@ $heading = "Edit";
                                         ?>
                                         <div class='col-md-4 flatposition<?php echo $flat;?>'>
                                                 <div class='checkbox check-default' >
-                                                        <input type='checkbox' name='flatpostion-3[]' id='flatpostion<?php echo $flat;?>-3' value='<?php echo $flat;?>'  <?php echo $checked;?>> <label for='flatpostion<?php echo $flat;?>-3'><?php echo $flat;?></label>
+                                                        <input type='checkbox' name='flatpostion-3[]' id='flatpostion<?php echo $flat;?>-3' value='<?php echo $flat;?>'  <?php echo $checked;?> <label for='flatpostion<?php echo $flat;?>-3'><?php echo $flat;?></label>
                                                 </div>
                                         </div>
                                         <?php
@@ -564,6 +596,11 @@ $heading = "Edit";
                             <span>Select file..</span>
                             <input type="hidden" class="svg_position_file_4" id="svg_position_file_4" name="svg_position_file_4" value="<?php echo @$building_svgdata[3]["svgfile"]["id"];?>"><input id="fileuploadsvg_position_file_4" class="fileuploadsvg_position_file_4" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="svg_position_file_4trash-image-option"  <?php if(@$building_svgdata[3]["svgfile"]["thumbnail_url"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="svg_position_file_4">  
+                           Delete 
+                            </a>
+                        </span>
                         <div id="progresssvg_position_file_4" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
@@ -571,7 +608,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo  @$building_svgdata[3]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_4" <?php if(@$building_svgdata[3]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo  @$building_svgdata[3]["svgfile"]["thumbnail_url"];?>" id="image_displaysvg_position_file_4" <?php if(@$building_svgdata[3]["svgfile"]["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -593,7 +630,7 @@ $heading = "Edit";
                                         ?>
                                         <div class='col-md-4 flatposition<?php echo $flat;?>'>
                                                 <div class='checkbox check-default' >
-                                                        <input type='checkbox' name='flatpostion-4[]' id='flatpostion<?php echo $flat;?>-4' value='<?php echo $flat;?>'  <?php echo $checked;?>> <label for='flatpostion<?php echo $flat;?>-4'><?php echo $flat;?></label>
+                                                        <input type='checkbox' name='flatpostion-4[]' id='flatpostion<?php echo $flat;?>-4' value='<?php echo $flat;?>'  <?php echo $checked;?> <label for='flatpostion<?php echo $flat;?>-4'><?php echo $flat;?></label>
                                                 </div>
                                         </div>
                                         <?php
@@ -618,6 +655,11 @@ $heading = "Edit";
                             <span>Select file..</span>
                             <input type="hidden" class="floor_layout_basic" id="floor_layout_basic" name="floor_layout_basic" value="<?php echo @$floor_layout_basic["id"];;?>"><input id="fileuploadfloor_layout_basic" class="fileuploadfloor_layout_basic" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="floor_layout_basictrash-image-option"  <?php if(@$floor_layout_basic["thumbnail_url"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="floor_layout_basic">  
+                           Delete 
+                            </a>
+                        </span>
                         <div id="progressfloor_layout_basic" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
@@ -625,7 +667,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo  @$floor_layout_basic["thumbnail_url"];?>" id="image_displayfloor_layout_basic" <?php if(@$floor_layout_basic["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo  @$floor_layout_basic["thumbnail_url"];?>" id="image_displayfloor_layout_basic" <?php if(@$floor_layout_basic["thumbnail_url"]==""){?>style="display:none"<?php } ?>>
                             </div>
                         </div>
                     </div>
@@ -640,6 +682,11 @@ $heading = "Edit";
                             <span>Select file..</span>
                             <input type="hidden" class="floor_layout_detailed" id="floor_layout_detailed" name="floor_layout_detailed" value="<?php echo @$floor_layout_detailed["id"];?>"><input id="fileuploadfloor_layout_detailed" class="fileuploadfloor_layout_detailed" type="file" name="files">
                         </span> 
+                         <span class="btn btn-danger fileinput-button"  id="floor_layout_detailedtrash-image-option"  <?php if(@$floor_layout_detailed["thumbnail_url"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="floor_layout_detailed">  
+                           Delete 
+                            </a>
+                        </span>
                         <div id="progressfloor_layout_detailed" class="progress" >
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
@@ -647,7 +694,7 @@ $heading = "Edit";
                         <br>
                         <div class="row-fluid">
                             <div class="col-md-12">
-                                <img src="<?php echo $floor_layout_detailed["thumbnail_url"];?>" id="image_displayfloor_layout_detailed" <?php if(@$floor_layout_detailed["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                <img src="<?php echo $floor_layout_detailed["thumbnail_url"];?>" id="image_displayfloor_layout_detailed" <?php if(@$floor_layout_detailed["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                             </div>
                         </div>
                     </div>
@@ -685,7 +732,7 @@ $heading = "Edit";
                    $show_exception_options=false;
                     for($i=1;$i<=$no_of_floors;$i++){
                        ?><div class="col-md-4">
-                        <div class='exception_floor checkbox check-default' id='<?php echo($exception_count);?>exception_floor_item<?php echo($i);?>'> <input type="checkbox" name="exception_floors<?php echo($exception_count);?>[]" id='<?php echo($exception_count);?>exception_floors<?php echo($i);?>' value="<?php echo $i;?>" <?php if(in_array($i,$building_exception["floors"])){ echo "checked"; $show_exception_options=true;}?> class="exception_floors"> <label for="<?php echo($exception_count);?>exception_floors<?php echo($i);?>"><?php echo $i;?></label></div></div>
+                        <div class='exception_floor checkbox check-default' id='<?php echo($exception_count);?>exception_floor_item<?php echo($i);?>'> <input type="checkbox" name="exception_floors<?php echo($exception_count);?>[]" id='<?php echo($exception_count);?>exception_floors<?php echo($i);?>' value="<?php echo $i;?>" <?php if(in_array($i,$building_exception["floors"])){ echo "checked"; $show_exception_options=true; } ?> class="exception_floors"> <label for="<?php echo($exception_count);?>exception_floors<?php echo($i);?>"><?php echo $i;?></label></div></div>
                     <?php    
                     }
                      
@@ -707,9 +754,9 @@ $heading = "Edit";
                             <?php $max_no_of_flats = get_max_no_of_flats();
 
                             for($i=1;$i<=$max_no_of_flats;$i++){
-                            ?><option value="<?php echo $i;?>" <?php if($i==$no_of_flats){ ?>selected <?php } ?>><?php echo $i;?></option>
+                            ?><option value="<?php echo $i;?>" <?php if($i==$no_of_flats){ ?>selected <?php } ?><?php echo $i;?></option>
                             <?php  
-                            }?>
+                            } ?>
                         </select>
                     </div>
                 </div>
@@ -727,6 +774,11 @@ $heading = "Edit";
                                     <span>Select file..</span>
                                     <input id="fileuploadexceptionfloor_layout_basic1" class="fileuploadexceptionfloor_layout_basic1" type="file" name="files">
                                 </span> 
+                                 <span class="btn btn-danger fileinput-button"  id="fileuploadexceptionfloor_layout_basic1trash-image-option"  <?php if(@$building_exception["floor_layout_basic"]["id"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="fileuploadexceptionfloor_layout_basic1">  
+                           Delete 
+                            </a>
+                        </span>
                                 <input type="hidden" class="exceptionfloor_layout_basic1" id="exceptionfloor_layout_basic1" name="exceptionfloor_layout_basic1" value="<?php echo @$building_exception["floor_layout_basic"]["id"];?>">
                                 <div id="progressexceptionfloor_layout_basic1" class="progress" >
                                     <div class="progress-bar progress-bar-success"></div>
@@ -734,7 +786,7 @@ $heading = "Edit";
                                  
                                 <div class="row-fluid">
                                     <div class="col-md-12">
-                                        <img src="<?php echo $building_exception["floor_layout_basic"]["thumbnail_url"];?>" id="image_displayexceptionfloor_layout_basic1" <?php if(@$building_exception["floor_layout_basic"]["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                        <img src="<?php echo $building_exception["floor_layout_basic"]["thumbnail_url"];?>" id="image_displayexceptionfloor_layout_basic1" <?php if(@$building_exception["floor_layout_basic"]["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                                     </div>
                                 </div>
                             </div>
@@ -749,6 +801,11 @@ $heading = "Edit";
                                     <span>Select file..</span>
                                     <input id="fileuploadexceptionfloor_layout_detailed1" class="fileuploadexceptionfloor_layout_detailed1" type="file" name="files">
                                 </span> 
+                                 <span class="btn btn-danger fileinput-button"  id="fileuploadexceptionfloor_layout_detailed1trash-image-option"  <?php if(@$building_exception["floor_layout_detailed"]["id"]==""){?> style="display:none"<?php } ?>>
+                           <a href="javascript:void(0)" class="common-trash-image" style="text-decoration:none;color:#fff"  fileField="fileuploadexceptionfloor_layout_detailed1">  
+                           Delete 
+                            </a>
+                        </span>
                                 <input type="hidden" class="exceptionfloor_layout_detailed1" id="exceptionfloor_layout_detailed1" name="exceptionfloor_layout_detailed1" value="<?php echo @$building_exception["floor_layout_detailed"]["id"];?>">
                                 <div id="progressexceptionfloor_layout_detailed1" class="progress" >
                                     <div class="progress-bar progress-bar-success"></div>
@@ -756,7 +813,7 @@ $heading = "Edit";
                                  
                                 <div class="row-fluid">
                                     <div class="col-md-12">
-                                        <img src="<?php echo $building_exception["floor_layout_detailed"]["thumbnail_url"];?>" id="image_displayexceptionfloor_layout_detailed1" <?php if(@$building_exception["floor_layout_detailed"]["thumbnail_url"]==""){?>style="display:none"<?}?>>
+                                        <img src="<?php echo $building_exception["floor_layout_detailed"]["thumbnail_url"];?>" id="image_displayexceptionfloor_layout_detailed1" <?php if(@$building_exception["floor_layout_detailed"]["thumbnail_url"]==""){?>style="display:none"<?php } ?>/>
                                     </div>
                                 </div>
                             </div>
@@ -764,14 +821,14 @@ $heading = "Edit";
                     </div> 
                 </div> 
                 
-                <?}
+                <?php }
                 ?> 
             </div>
         </div>
     </div>
 </div>   
  
-    <div id="floorrise-container-main" <? if(@$no_of_floors==""){?>style="display:none"<?php } ?>>
+    <div id="floorrise-container-main" <?php if(@$no_of_floors==""){?>style="display:none"<?php } ?>>
         <div style="clear:both"></div>
         <b>Floor Rise</b>
         <div class="well" id="flats_container">

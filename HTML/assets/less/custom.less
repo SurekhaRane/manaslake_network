@@ -138,6 +138,10 @@ body{
 	}
 }
 
+a:focus{
+	outline: 0;
+}
+
 @media (max-width:767px){
 	#screen-one-region, #screen-two-region, #screen-three-region{
 		h3{
@@ -154,6 +158,7 @@ body{
 .cbp-spmenu-vertical{
 	background-color: darken(@color-primary, 25%);
 	border-left: 1px solid darken(@color-primary, 15%);
+	top: 50px;
 	& > ul{
 		list-style-type: none;
 		padding-bottom: 0;
@@ -394,3 +399,20 @@ a.im-clear-button{
         background: url(../images/icon-close.png) no-repeat 50% 50%;
     }
 /**** end print modal styles ****/
+
+
+.termsLink, .salesLink{
+	color: @color-primary;
+	cursor: pointer;
+	margin: 10px auto;
+	width: 140px;
+	text-align: center;
+	display: inline-block;
+	&:hover{
+		color: darken(@color-primary, 5%);
+		text-decoration: underline;
+	}
+}
+.salesLink{
+	width: 100px;
+}

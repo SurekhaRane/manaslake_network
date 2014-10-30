@@ -18,21 +18,47 @@ define(['extm', 'src/apps/popup/popup-view'], function(Extm, PopupView) {
       return this.getAjaxData();
     };
 
-    PopupController.prototype._getPopupView = function(Collection) {
+    PopupController.prototype._getPopupView = function(Collection, classnamearr) {
       return new PopupView({
-        collection: Collection
+        collection: Collection,
+        templateHelpers: {
+          selection: classnamearr
+        }
       });
     };
 
     PopupController.prototype._getUnitsCountCollection = function(modelstring) {
-      var buildingModel, cookeArray, element, exceptionObject, facingModel, facingModelArray, facingssArray, floorLayoutimage, floorriserange, i, mainArr, rangeArrayVal, roomSizesArray, roomSizesObject, roomTypeArr, roomsizearr, roomsizearray, roomsizesCollection, terraceoptions, terraceoptionstext, unitCollection, unitModel, unitModelArray, unitTypeModel, unitTypeModelName, unitVariantModel, view, viewModel, viewModelArray, viewsArray, _i, _j, _k, _len, _len1, _len2;
+      var act, actroom, actroomColl, actualroom, buildingModel, classnamearr, coll, cookeArray, element, exceptionObject, facingModel, facingModelArray, facingssArray, floorLayoutimage, floorriserange, i, id, mainArr, rangeArrayVal, roomSizesArray, roomSizesObject, roomTypeArr, roomcoll, roomsizearr, roomsizearray, roomsizesCollection, terraceoptions, terraceoptionstext, unitCollection, unitModel, unitModelArray, unitTypeModel, unitTypeModelName, unitVariantModel, view, viewModel, viewModelArray, viewsArray, _i, _j, _k, _l, _len, _len1, _len2, _len3;
       cookeArray = modelstring;
       unitModelArray = [];
-      floorLayoutimage = "";
+      classnamearr = [];
+      roomcoll = [];
+      actualroom = [];
+      actroomColl = "";
+      act = [];
       if (cookeArray.length !== 0) {
         for (_i = 0, _len = cookeArray.length; _i < _len; _i++) {
           element = cookeArray[_i];
           unitModel = element;
+          unitVariantModel = App.master.unit_variant.findWhere({
+            id: unitModel.get('unitVariant')
+          });
+          roomSizesObject = unitVariantModel.get('roomsizes');
+          roomSizesArray = $.map(roomSizesObject, function(index, value1) {
+            return roomcoll.push({
+              id: index.room_type_id,
+              name: index.room_type
+            });
+          });
+        }
+      }
+      roomcoll = _.uniq(roomcoll);
+      floorLayoutimage = "";
+      if (cookeArray.length !== 0) {
+        for (_j = 0, _len1 = cookeArray.length; _j < _len1; _j++) {
+          element = cookeArray[_j];
+          unitModel = element;
+          actualroom = [];
           buildingModel = App.master.building.findWhere({
             id: unitModel.get('building')
           });
@@ -89,15 +115,17 @@ define(['extm', 'src/apps/popup/popup-view'], function(Extm, PopupView) {
           });
           unitModel.set("sellablearea", unitVariantModel.get('sellablearea'));
           unitModel.set("carpetarea", unitVariantModel.get('carpetarea'));
+          unitModel.set("terracearea", unitVariantModel.get('terracearea'));
           unitModel.set("unitTypeName", unitTypeModelName[0]);
           unitModel.set("buidlingName", buildingModel.get('name'));
           unitModel.set('TwoDimage', unitVariantModel.get('url2dlayout_image'));
           unitModel.set('ThreeDimage', unitVariantModel.get('url3dlayout_image'));
           unitModel.set('floorLayoutimage', floorLayoutimage);
+          unitModel.set('BuildingPositionimage', buildingModel.get('positioninproject').image_url);
           if (unitModel.get('views_name') !== "") {
             viewsArray = unitModel.get('views_name');
-            for (_j = 0, _len1 = viewsArray.length; _j < _len1; _j++) {
-              element = viewsArray[_j];
+            for (_k = 0, _len2 = viewsArray.length; _k < _len2; _k++) {
+              element = viewsArray[_k];
               viewModel = App.master.view.findWhere({
                 id: parseInt(element)
               });
@@ -109,8 +137,8 @@ define(['extm', 'src/apps/popup/popup-view'], function(Extm, PopupView) {
           unitModel.set('views', viewModelArray.join(','));
           facingssArray = unitModel.get('facing_name');
           if (facingssArray.length !== 0) {
-            for (_k = 0, _len2 = facingssArray.length; _k < _len2; _k++) {
-              element = facingssArray[_k];
+            for (_l = 0, _len3 = facingssArray.length; _l < _len3; _l++) {
+              element = facingssArray[_l];
               facingModel = App.master.facings.findWhere({
                 id: parseInt(element)
               });
@@ -122,7 +150,7 @@ define(['extm', 'src/apps/popup/popup-view'], function(Extm, PopupView) {
           unitModel.set('facings', facingModelArray.join(','));
           roomSizesObject = unitVariantModel.get('roomsizes');
           roomsizearray = [];
-          roomTypeArr = [68, 71, 72, 70, 66];
+          roomTypeArr = roomcoll;
           roomSizesArray = $.map(roomSizesObject, function(index, value1) {
             return [index];
           });
@@ -138,47 +166,96 @@ define(['extm', 'src/apps/popup/popup-view'], function(Extm, PopupView) {
           mainArr = [];
           roomsizesCollection = new Backbone.Collection(roomSizesArray);
           $.each(roomTypeArr, function(ind, val) {
-            var ii, roomtype;
+            var roomtype, roomtypeid, roomtypename;
             roomsizearr = [];
+            roomtypename = '';
+            roomtypeid = val.id;
+            roomtypename = val.name;
             roomtype = roomsizesCollection.where({
-              room_type_id: parseInt(val)
+              room_type_id: parseInt(val.id)
             });
-            ii = 0;
-            if (parseInt(val) === 70) {
-              if (ii > 0) {
-                terraceoptions = "";
-              }
-              $.each(roomtype, function(index1, value1) {
-                roomsizearr.push({
-                  room_size: value1.get('room_size'),
-                  terace: terraceoptions
-                });
-                return ii++;
-              });
-            } else {
+            if (roomtype !== void 0) {
               $.each(roomtype, function(index1, value1) {
                 return roomsizearr.push({
-                  room_size: value1.get('room_size')
+                  room_size: value1.get('room_size'),
+                  room_type: value1.get('room_type')
                 });
               });
-            }
-            roomsizearr.sort(function(a, b) {
-              return b.room_size - a.room_size;
-            });
-            if (roomsizearr.length === 0) {
-              roomsizearr.push({
-                room_size: "----------"
+              roomsizearr.sort(function(a, b) {
+                return b.room_size - a.room_size;
+              });
+              if (roomsizearr.length === 0) {
+                roomsizearr.push({
+                  room_size: '----'
+                });
+              }
+              return mainArr.push({
+                id: roomtypeid,
+                name: roomtypename,
+                subarray: roomsizearr
               });
             }
-            return mainArr.push({
-              subarray: roomsizearr
+          });
+          actroom = [];
+          $.each(mainArr, function(ind, val) {
+            classnamearr.push({
+              id: val.id,
+              name: val.name,
+              subarray: val.subarray
+            });
+            return actroom.push({
+              id: val.id,
+              name: val.name,
+              subarray: val.subarray
             });
           });
-          unitModel.set('mainArr', mainArr);
+          id = "";
+          actroomColl = new Backbone.Collection(actroom);
+          actualroom = [];
+          coll = [];
+          $.each(roomcoll, function(inde, value) {
+            var classname;
+            classname = '';
+            coll = [];
+            $.each(classnamearr, function(ind, val) {
+              if (parseInt(val.id) === parseInt(value.id)) {
+                if (val.subarray !== '----') {
+                  return coll.push({
+                    id: value.id,
+                    name: val.name,
+                    subarray: val.subarray,
+                    classname: classname
+                  });
+                }
+              }
+            });
+            if (coll.length === 0) {
+              return id = actroomColl.get(value);
+            }
+          });
+          act = [];
+          actroomColl.each(function(item) {
+            if (id !== item.get('id')) {
+              if (item.get('subarray') !== '----') {
+                return act.push({
+                  id: item.get('id'),
+                  name: item.get('name'),
+                  subarray: item.get('subarray')
+                });
+              } else {
+                return act.push({
+                  id: item.get('id'),
+                  name: item.get('name'),
+                  subarray: "-----------"
+                });
+              }
+            }
+          });
+          unitModel.set('mainArr', act);
           unitModelArray.push(unitModel);
         }
         unitCollection = new Backbone.Collection(unitModelArray);
-        this.view = view = this._getPopupView(unitCollection);
+        this.view = view = this._getPopupView(unitCollection, act);
         return this.show(view);
       }
     };
@@ -200,7 +277,7 @@ define(['extm', 'src/apps/popup/popup-view'], function(Extm, PopupView) {
           _results.push($.ajax({
             method: "POST",
             url: AJAXURL + '?action=get_unit_single_details',
-            data: 'id=' + unitModel.get('id'),
+            data: 'id=' + unitModel.get('id') + '&building=' + unitModel.get('building'),
             success: function(result) {
               var unitModel1;
               i++;

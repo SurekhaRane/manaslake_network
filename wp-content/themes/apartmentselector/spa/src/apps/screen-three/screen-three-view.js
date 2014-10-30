@@ -3,7 +3,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['marionette'], function(Marionette) {
-  var BuildingView, ScreenThreeLayout, UnitTypeChildView, UnitTypeView, UnitView, cloneunitVariantArrayColl, count, entrancetagsArray, firstElement, flag_set, globalUnitArrayInt, object, object1, position, rangeunitArray, sudoSlider, tagsArray, terracetagsArray, unitAssigedArray, unitChildView, unitVariantArray, unitVariantIdArray, unitVariantString, unitVariants, viewtagsArray;
+  var BuildingView, ScreenThreeLayout, UnitTypeChildView, UnitTypeView, UnitView, cloneunitVariantArrayColl, count, entrancetagsArray, firstElement, flag_set, globalUnitArrayInt, object, object1, object2, object3, object4, position, rangeunitArray, sudoSlider, tagsArray, terracetagsArray, unitAssigedArray, unitChildView, unitVariantArray, unitVariantIdArray, unitVariantString, unitVariants, viewtagsArray;
   flag_set = 0;
   unitVariantArray = '';
   unitVariantIdArray = [];
@@ -23,6 +23,9 @@ define(['marionette'], function(Marionette) {
   entrancetagsArray = [];
   terracetagsArray = [];
   object = "this";
+  object2 = "this";
+  object3 = "this";
+  object4 = "this";
   ScreenThreeLayout = (function(_super) {
     __extends(ScreenThreeLayout, _super);
 
@@ -30,7 +33,7 @@ define(['marionette'], function(Marionette) {
       return ScreenThreeLayout.__super__.constructor.apply(this, arguments);
     }
 
-    ScreenThreeLayout.prototype.template = '<h3 class="text-center light m-t-0 m-b-20 unittype hidden animated pulse">We found <span class="bold text-primary"> {{countUnits }} </span> apartments that matched your selection.</h3> <h3 class="text-center light m-t-0 m-b-20 budget hidden animated pulse">We found <span class="bold text-primary"> {{countUnits }} </span>  apartments in your budget of <strong>{{selection}}</strong></h3> <h3 class="text-center light m-t-0 m-b-20 refresh hidden animated pulse">You just refreshed the page. You are now seeing <span class="bold text-primary">All</span> apartments across all the towers.</h3> <div class="text-center subTxt m-b-20 All hidden animated pulse">You are seeing <span class="bold text-primary">All</span> apartments in the selected floor range of the tower.</div> <div class="introTxt text-center">These apartments are available in different size variations on different floors of the tower. Click on any available apartment for more details. <!--<br><em>(You can scroll between towers to see other options.)</em>--></div> <div class="introTxt text-center light"> You are seeing <div id="tagslist1" class="taglist"> <ul></ul> </div> <span class="text-primary variantToggle"></span>variants of your apartment selection </div> <div class="variantBox"> <div class="pull-left m-l-15"> <input type="checkbox" name="unselectall" id="unselectall" class="checkbox" value="0" checked/> <label for="unselectall">Select/Unselect All</label> </div> <div class="text-right"><span class="variantClose glyphicon glyphicon-remove text-grey"></span></div> <div class="grid-container"> {{#unitVariants}} <div class="grid-block-3" > <a class="grid-link2 selected" href="#" id="gridlink{{id}}" data-id="{{id}}"> {{sellablearea}} Sq.ft.<input type="hidden" name="checklink{{id}}"   id="checklink{{id}}"   value="1" /> </a> </div> {{/unitVariants}} <div class="variantAction m-t-5 m-b-20"> <a class="btn btn-primary m-r-10 done">DONE</a> <a class="btn btn-default cancel">CANCEL</a> </div> </div> </div> <div class="special introTxt text-center hidden "> <div> Click <a class="special bold hidden" id="filterModalscren3">here</a> to set <span class="bold"> Additional Filters</span> </div> View: <div id="viewtaglist2" class="taglist2"> <ul></ul> </div> Entrance: <div id="entrancetaglist2" class="taglist2"> <ul></ul> </div> Terrace: <div id="terracetaglist2" class="taglist2"> <ul></ul> </div> </div> <div class="row m-l-0 m-r-0 m-t-20 bgClass"> <div class="col-md-5 col-lg-4"> <div id="vs-container" class="vs-container"> <header class="vs-header" id="building-region"></header> <div id="floorsvg" class="floorSvg"></div> <div  id="unit-region"></div> </div> <div class="h-align-middle m-t-20 m-b-20"> <a href="#screen-three-region" class="btn btn-default btn-lg disabled" id="screen-three-button">Show Unit</a> </div> </div> <div class="col-md-7 col-lg-8 b-grey b-l visible-md visible-lg rightTowerSvg"> <div class="svgLegend"> <div class="row"> <div class="col-sm-6"><span class="legendBox available"></span> Available</div> <!--<div class="col-sm-4"><span class="legendBox sold"></span> Sold/Blocked</div>--> <div class="col-sm-6"><span class="legendBox na"></span> Not in Selection/Not Released</div> </div> </div> <div id="positionsvg" class="positionSvg"> </div> </div> <input type="hidden" name="currency2" id="currency2" class="demo" data-a-sign="Rs. "   data-m-dec="" data-d-group="2"> </div> <div class="specialFilter1"> <div class="bgClass"> <h3 class="text-center light">Choose from the options below to filter your selection</h3> <div class="row m-l-0 m-r-0 filterBlock"> <div class="col-sm-5 b-r b-grey"> <h4 class="bold blockTitle">View</h4> {{#views}} <div class="filterBox"> <input type="checkbox" name="screenview{{id}}" data-name="{{name}}" id="screenview{{id}}" checked class="checkbox viewname" value="{{id}}"> <label for="screenview{{id}}">{{name}}</label> </div> {{/views}} <div class="clearfix"></div> </div> <div class="col-sm-3 b-r b-grey"> <h4 class="bold blockTitle">Entrance</h4> {{#facings}} <div class="filterBox"> <input type="checkbox" name="screenfacing{{id}}" data-name="{{name}}" id="screenfacing{{id}}" checked class="checkbox facing" value="{{id}}"> <label for="screenfacing{{id}}">{{name}}</label> </div> {{/facings}} <div class="clearfix"></div> </div> <div class="col-sm-4"> <h4 class="bold blockTitle">Terrace</h4> {{#terrace}} <div class="filterBox"> <input type="checkbox" name="screenterrace{{id}}" data-name="{{name}}" id="screenterrace{{id}}" checked class="checkbox terrace" value="{{id}}"> <label for="screenterrace{{id}}">{{name}}</label> </div> {{/terrace}} </div> </div> <div id="filtermsg1" class="alrtMsg animated pulse"></div> <h4 id="unittypecount1" class="text-center"></h4> <div class="text-center m-t-10 m-b-10"> <a id="donepopupscreen" class="btn btn-primary btn-sm b-close">DONE</a> <a id="cancelpopupscreen" class="btn btn-primary btn-sm b-close">CANCEL</a> </div> </div> </div>';
+    ScreenThreeLayout.prototype.template = '<h3 class="text-center light m-t-0 m-b-20 unittype hidden animated pulse">We found <span class="bold text-primary"> {{countUnits }} </span> apartments that matched your selection.</h3> <h3 class="text-center light m-t-0 m-b-20 budget hidden animated pulse">We found <span class="bold text-primary"> {{countUnits }} </span>  apartments in your budget of <strong>{{selection}}</strong></h3> <h3 class="text-center light m-t-0 m-b-20 refresh hidden animated pulse">You just refreshed the page. You are now seeing <span class="bold text-primary">All</span> apartments across all the towers.</h3> <div class="text-center subTxt m-b-20 All hidden animated pulse">You are seeing <span class="bold text-primary">All</span> apartments in the selected floor range of the tower.</div> <div class="introTxt text-center">These apartments are available in different size variations on different floors of the tower. Click on any available apartment for more details. <!--<br><em>(You can scroll between towers to see other options.)</em>--></div> <div class="introTxt text-center light"> You are seeing <div id="tagslist1" class="taglist"> <ul></ul> </div> <span class="text-primary variantToggle"></span>variants of your apartment selection </div> <div class="variantBox"> <div class="grid-container"> <div class="pull-left m-l-15"> <input type="checkbox" name="unselectall" id="unselectall" class="checkbox" value="0" checked/> <label for="unselectall">Select/Unselect All</label> </div> <div class="text-right"><span class="variantClose glyphicon glyphicon-remove text-grey"></span></div> {{#unitVariants}} <div class="grid-block-3 {{filtername}}" > <a class="grid-link2 {{selected}}" href="#" id="gridlink{{id}}" data-id="{{id}}" data-count = "{{count}}"> {{sellablearea}} Sq.ft.<input type="hidden" name="checklink{{id}}"   id="checklink{{id}}"   value="1" /> <h5><span> {{filter}} : </span> {{count}}</h5> </a> </div> {{/unitVariants}} <div class="variantAction m-t-5 m-b-20"> <a class="btn btn-primary m-r-10 done">DONE</a> <a class="btn btn-default cancel">CANCEL</a> </div> </div> </div> <div class="special introTxt text-center hidden "> <div> Click <a class="special bold hidden" id="filterModalscren3">here</a> to set <span class="bold"> Additional Filters</span> </div> View: <div id="viewtaglist2" class="taglist2"> <ul></ul> </div> Entrance: <div id="entrancetaglist2" class="taglist2"> <ul></ul> </div> Terrace: <div id="terracetaglist2" class="taglist2"> <ul></ul> </div> </div> <div class="row m-l-0 m-r-0 m-t-20 bgClass"> <div class="col-md-5 col-lg-4"> <div id="vs-container" class="vs-container"> <header class="vs-header" id="building-region"></header> <div id="layoutmsg" class="alrtMsg animated pulse"></div> <div id="floorsvg" class="floorSvg"></div> <div  id="unit-region"></div> </div> <div class="h-align-middle m-t-20 m-b-20"> <a href="#screen-three-region" class="btn btn-default btn-lg disabled" id="screen-three-button">Show Unit</a> </div> </div> <div class="col-md-7 col-lg-8 b-grey b-l visible-md visible-lg rightTowerSvg"> <div class="svgLegend"> <div class="row"> <div class="col-sm-6"><span class="legendBox available"></span> Available</div> <!--<div class="col-sm-4"><span class="legendBox sold"></span> Sold/Blocked</div>--> <div class="col-sm-6"><span class="legendBox na"></span> Not in Selection/Not Released</div> </div> </div> <div id="positionsvg" class="positionSvg"> </div> </div> <input type="hidden" name="currency2" id="currency2" class="demo" data-a-sign="Rs. "   data-m-dec="" data-d-group="2"> </div> <div class="specialFilter1"> <div class="bgClass"> <h3 class="text-center light">Choose from the options below to filter your selection</h3> <div class="pull-left m-l-15"> <input type="checkbox" name="unselectview" id="unselectview" class="checkbox" value="0" checked/> <label for="unselectview">Select/Unselect All</label> </div> <div class="clearfix"></div> <div class="row m-l-0 m-r-0 filterBlock"> <div class="col-sm-5 b-r b-grey"> <h4 class="bold blockTitle">View</h4> {{#views}} <div class="filterBox {{classname}}"> <input type="checkbox" {{disabled}} name="screenview{{id}}" data-name="{{name}}" id="screenview{{id}}" {{checked}} class="checkbox viewname" value="{{id}}"> <label for="screenview{{id}}">{{name}}</label> </div> {{/views}} <div class="clearfix"></div> </div> <div class="col-sm-3 b-r b-grey"> <h4 class="bold blockTitle">Entrance</h4> {{#facings}} <div class="filterBox {{classname}}"> <input type="checkbox" {{disabled}} name="screenfacing{{id}}" data-name="{{name}}" id="screenfacing{{id}}" {{checked}} class="checkbox facing" value="{{id}}"> <label for="screenfacing{{id}}">{{name}}</label> </div> {{/facings}} <div class="clearfix"></div> </div> <div class="col-sm-4"> <h4 class="bold blockTitle">Terrace</h4> {{#terrace}} <div class="filterBox {{classname}}"> <input type="checkbox" {{disabled}}  name="screenterrace{{id}}" data-name="{{name}}" id="screenterrace{{id}}" {{checked}} class="checkbox terrace" value="{{id}}"> <label for="screenterrace{{id}}">{{name}}</label> </div> {{/terrace}} </div> </div> <div id="filtermsg1" class="alrtMsg animated pulse"></div> <h4 id="unittypecount1" class="text-center"></h4> <div class="text-center m-t-10 m-b-10"> <a id="donepopupscreen" class="btn btn-primary btn-sm b-close">DONE</a> <!--<a id="cancelpopupscreen" class="btn btn-primary btn-sm b-close">CANCEL</a>--> </div> </div> </div>';
 
     ScreenThreeLayout.prototype.className = 'page-container row-fluid';
 
@@ -40,10 +43,19 @@ define(['marionette'], function(Marionette) {
     };
 
     ScreenThreeLayout.prototype.events = {
+      'click .other': function(e) {
+        $("#" + e.target.id).parent().removeAttr('data-target');
+        return this.showLayoutMsg();
+      },
       'click #filterModalscren3': function(e) {
+        if (App.defaults['view'] === 'All' && App.defaults['facing'] === 'All' && App.defaults['terrace'] === 'All') {
+          $('#unselectview').prop('checked', true);
+        } else {
+          $('#unselectview').prop('checked', false);
+        }
         return $('.specialFilter1').bPopup();
       },
-      'click .customLink': function(e) {
+      'click .floor-pos ': function(e) {
         var element, id, index, _i, _len;
         $("#flatno").text("");
         $("#towerno").text("");
@@ -74,6 +86,16 @@ define(['marionette'], function(Marionette) {
       },
       'click .unit-hover': function(e) {
         var buildinArray, building, buildingCollection, buildingModel, flatid, floorriserange, id, indexvalue, rangeArrayVal, svgdata, svgposition, temp, temp1, temp2, unitModel, unitvalues;
+        $('#screen-four-region').removeClass('section');
+        App.layout.screenFourRegion.el.innerHTML = "";
+        App.navigate("screen-three");
+        App.currentStore.unit.reset(UNITS);
+        App.currentStore.building.reset(BUILDINGS);
+        App.currentStore.unit_type.reset(UNITTYPES);
+        App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         $("#flatno").text("");
         $("#towerno").text("");
         $("#unittypename").text("");
@@ -112,6 +134,7 @@ define(['marionette'], function(Marionette) {
         unitModel = App.master.unit.findWhere({
           id: parseInt(id)
         });
+        App.unit['name'] = unitModel.get("id");
         position = unitModel.get('unitAssigned');
         rangeArrayVal = [];
         $.each(floorriserange, function(index, value) {
@@ -202,6 +225,16 @@ define(['marionette'], function(Marionette) {
       },
       'click .unselected-floor': function(e) {
         var buildinArray, building, buildingCollection, buildingModel, flatid, floorriserange, id, indexvalue, rangeArrayVal, svgdata, svgposition, temp, temp1, temp2, unitModel, unitvalues;
+        $('#screen-four-region').removeClass('section');
+        App.layout.screenFourRegion.el.innerHTML = "";
+        App.navigate("screen-three");
+        App.currentStore.unit.reset(UNITS);
+        App.currentStore.building.reset(BUILDINGS);
+        App.currentStore.unit_type.reset(UNITTYPES);
+        App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         $("#flatno").text("");
         $("#towerno").text("");
         $("#unittypename").text("");
@@ -240,6 +273,7 @@ define(['marionette'], function(Marionette) {
         unitModel = App.master.unit.findWhere({
           id: parseInt(id)
         });
+        App.unit['name'] = unitModel.get("id");
         position = unitModel.get('unitAssigned');
         rangeArrayVal = [];
         $.each(floorriserange, function(index, value) {
@@ -355,6 +389,8 @@ define(['marionette'], function(Marionette) {
                 });
                 if (unittpe.get('id') !== 14 && unittpe.get('id') !== 16) {
                   text = unitModel.get('name') + ' | ' + unittpe.get('name');
+                } else if (unittpe.get('id') === 14) {
+                  text = 'Refuge';
                 } else {
                   text = 'Not Released';
                 }
@@ -430,6 +466,8 @@ define(['marionette'], function(Marionette) {
                 });
                 if (unittpe.get('id') !== 14 && unittpe.get('id') !== 16) {
                   text = unitModel.get('name') + ' | ' + unittpe.get('name');
+                } else if (unittpe.get('id') === 14) {
+                  text = 'Refuge';
                 } else {
                   text = 'Not Released';
                 }
@@ -505,6 +543,8 @@ define(['marionette'], function(Marionette) {
                 });
                 if (unittpe.get('id') !== 14 && unittpe.get('id') !== 16) {
                   text = unitModel.get('name') + ' | ' + unittpe.get('name');
+                } else if (unittpe.get('id') === 14) {
+                  text = 'Refuge';
                 } else {
                   text = 'Not Released';
                 }
@@ -532,14 +572,19 @@ define(['marionette'], function(Marionette) {
         return e.preventDefault();
       },
       'click .grid-link2': function(e) {
-        var id, index, track;
+        var dataCount, id, index, track;
         count = unitVariantArray.length;
         id = $('#' + e.target.id).attr('data-id');
+        dataCount = $('#' + e.target.id).attr('data-count');
+        if (parseInt(dataCount) === 0) {
+          return false;
+        }
         track = 0;
         if ($('#checklink' + id).val() === '1') {
           index = unitVariantArray.indexOf(parseInt(id));
           if (index !== -1) {
             unitVariantArray.splice(index, 1);
+            $('#' + e.target.id).removeClass("selected");
             $('#checklink' + id).val('0');
             track = 0;
             unitVariantIdArray.push(parseInt(id));
@@ -547,6 +592,7 @@ define(['marionette'], function(Marionette) {
         } else {
           track = 1;
           unitVariantArray.push(parseInt(id));
+          $('#' + e.target.id).addClass("selected");
           $('#checklink' + id).val('1');
         }
         if (globalUnitArrayInt.length !== 0) {
@@ -576,11 +622,15 @@ define(['marionette'], function(Marionette) {
       'click .done': function(e) {
         var params;
         App.layout.screenFourRegion.el.innerHTML = "";
+        $('#screen-four-region').removeClass('section');
         App.navigate("screen-three");
         App.currentStore.unit.reset(UNITS);
         App.currentStore.building.reset(BUILDINGS);
         App.currentStore.unit_type.reset(UNITTYPES);
         App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         if (unitVariantString === "" || parseInt(cloneunitVariantArrayColl.length) === parseInt(unitVariantArray.length)) {
           unitVariantString = "All";
         }
@@ -604,7 +654,7 @@ define(['marionette'], function(Marionette) {
           return globalUnitArrayInt.push(parseInt(value));
         });
         if (App.defaults['unitVariant'] !== 'All') {
-          return $.each(unitVariantArray, function(index, value) {
+          $.each(unitVariantArray, function(index, value) {
             var key;
             key = _.contains(globalUnitArrayInt, parseInt(value));
             if (key === true) {
@@ -615,26 +665,32 @@ define(['marionette'], function(Marionette) {
               return $('#checklink' + value).val('0');
             }
           });
+        } else {
+          globalUnitArrayInt = unitVariantArray;
+          $.each(unitVariantArray, function(index, value) {
+            $('#gridlink' + value).addClass('selected');
+            return $('#checklink' + value).val('1');
+          });
         }
+        return $('#unselectall').prop('checked', true);
       },
       'click #unselectall': function(e) {
-        var remainainArray, tempArray, units, value;
+        var remainainArray, tempArray, value;
         if ($('#' + e.target.id).prop('checked') === true) {
-          cloneunitVariantArrayColl.each(function(index) {
-            $('#gridlink' + index.get('id')).addClass('selected');
-            $('#checklink' + index.get('id')).val('1');
-            return unitVariantArray.push(index.get('id'));
+          $.each(cloneunitVariantArrayColl, function(index, value) {
+            $('#gridlink' + value).addClass('selected');
+            $('#checklink' + value).val('1');
+            return unitVariantArray.push(value);
           });
           unitVariantArray = _.uniq(unitVariantArray);
-          units = cloneunitVariantArrayColl.toArray();
-          units.sort(function(a, b) {
-            return a.get('id') - b.get('id');
+          cloneunitVariantArrayColl.sort(function(a, b) {
+            return a - b;
           });
           return unitVariantString = 'All';
         } else {
           tempArray = [];
-          cloneunitVariantArrayColl.each(function(value) {
-            return tempArray.push(parseInt(value.get('id')));
+          $.each(cloneunitVariantArrayColl, function(index, value) {
+            return tempArray.push(parseInt(value));
           });
           value = _.first(tempArray);
           remainainArray = _.rest(tempArray);
@@ -643,7 +699,8 @@ define(['marionette'], function(Marionette) {
             $('#checklink' + value).val('0');
             index = unitVariantArray.indexOf(parseInt(value));
             if (index !== -1) {
-              return unitVariantArray.splice(index, 1);
+              unitVariantArray.splice(index, 1);
+              return unitVariantIdArray.push(parseInt(value));
             }
           });
           return unitVariantString = value.toString();
@@ -652,7 +709,9 @@ define(['marionette'], function(Marionette) {
     };
 
     ScreenThreeLayout.prototype.onShow = function() {
-      var $columns_number, capability, clonefacings, cloneterraces, cloneviews, entrance, entranceArrayText, globalUnitVariants, globalfacing, globalfacingInt, globalterrace, globalterraceInt, globalviewInt, globalviews, mainnewarr, mainunique, mainunitTypeArray1, originalOfacings, originalOterraces, originalOviews, originalfacings, originalterraces, originalviews, selectedArray, status, teraace, terraceArrayText, testtext, unitVariantArrayColl, unitVariantArrayText, unitVariantsArray, units1, unittypetext, usermodel, view, viewArrayText;
+      var $columns_number, capability, clonefacings, cloneterraces, cloneviews, entrance, entranceArrayText, globalUnitVariants, globalfacing, globalfacingInt, globalterrace, globalterraceInt, globalviewInt, globalviews, mainnewarr, mainunique, mainunitTypeArray1, objectele, originalOfacings, originalOterraces, originalOviews, originalfacings, originalterraces, originalviews, selectedArray, status, teraace, terraceArrayText, testtext, unitVariantArrayColl, unitVariantArrayText, unitVariantsArray, units1, unittypetext, usermodel, view, viewArrayText;
+      unitAssigedArray = [];
+      objectele = "this";
       viewtagsArray = [];
       entrancetagsArray = [];
       terracetagsArray = [];
@@ -697,48 +756,48 @@ define(['marionette'], function(Marionette) {
           });
         }
         if (App.defaults['view'] !== 'All') {
-          $.each(originalOviews, function(index, value) {
-            if ($.inArray(parseInt(value.id), globalviewInt) >= 0) {
-              $('#screenview' + value.id).prop('checked', true);
-              return view.push(value.id);
+          $.each(originalviews, function(index, value) {
+            if ($.inArray(parseInt(value), globalviewInt) >= 0) {
+              $('#screenview' + value).prop('checked', true);
+              return view.push(value);
             } else {
-              return $('#screenview' + value.id).prop('checked', false);
+              return $('#screenview' + value).prop('checked', false);
             }
           });
         } else {
-          $.each(originalOviews, function(index, value) {
-            $('#screenview' + value.id).prop('checked', true);
-            return view.push(value.id);
+          $.each(originalviews, function(index, value) {
+            $('#screenview' + value).prop('checked', true);
+            return view.push(value);
           });
         }
         if (App.defaults['facing'] !== 'All') {
-          $.each(originalOfacings, function(index, value) {
-            if ($.inArray(parseInt(value.id), globalfacingInt) >= 0) {
-              $('#screenfacing' + value.id).prop('checked', true);
-              return entrance.push(value.id);
+          $.each(originalfacings, function(index, value) {
+            if ($.inArray(parseInt(value), globalfacingInt) >= 0) {
+              $('#screenfacing' + value).prop('checked', true);
+              return entrance.push(value);
             } else {
-              return $('#screenfacing' + value.id).prop('checked', false);
+              return $('#screenfacing' + value).prop('checked', false);
             }
           });
         } else {
-          $.each(originalOfacings, function(index, value) {
-            $('#screenfacing' + value.id).prop('checked', true);
-            return entrance.push(value.id);
+          $.each(originalfacings, function(index, value) {
+            $('#screenfacing' + value).prop('checked', true);
+            return entrance.push(value);
           });
         }
         if (App.defaults['terrace'] !== 'All') {
-          $.each(originalOterraces, function(index, value) {
-            if ($.inArray(parseInt(value.id), globalterraceInt) >= 0) {
-              $('#screenterrace' + value.id).prop('checked', true);
-              return teraace.push(value.id);
+          $.each(originalterraces, function(index, value) {
+            if ($.inArray(parseInt(value), globalterraceInt) >= 0) {
+              $('#screenterrace' + value).prop('checked', true);
+              return teraace.push(value);
             } else {
-              return $('#screenterrace' + value.id).prop('checked', false);
+              return $('#screenterrace' + value).prop('checked', false);
             }
           });
         } else {
-          $.each(originalOterraces, function(index, value) {
-            $('#screenterrace' + value.id).prop('checked', true);
-            return teraace.push(value.id);
+          $.each(originalterraces, function(index, value) {
+            $('#screenterrace' + value).prop('checked', true);
+            return teraace.push(value);
           });
         }
         mainnewarr = [];
@@ -791,8 +850,143 @@ define(['marionette'], function(Marionette) {
           return unittypetext += '<span>' + value.name + ' :</span><span class="text-primary bold m-r-20">' + value.count.length + '</span>';
         });
         $('#unittypecount1').html(unittypetext);
+        $('#unselectview').on('click', function(e) {
+          var firstentrance, firstentrancearr, firstteraace, firstteraacearr, firstview, firstviewarr, rest, restent, restter, uniqfacings, uniqterrace, uniqviews;
+          mainnewarr = [];
+          mainunique = {};
+          if ($('#' + e.target.id).prop('checked') !== true) {
+            firstview = _.first(view);
+            rest = _.rest(view);
+            firstviewarr = [];
+            firstviewarr.push(firstview);
+            $('#screenview' + firstview).prop('checked', true);
+            $.each(rest, function(index, value) {
+              return $('#screenview' + value).prop('checked', false);
+            });
+            view = firstviewarr;
+            App.defaults['view'] = view.toString();
+            firstentrance = _.first(entrance);
+            firstentrancearr = [];
+            firstentrancearr.push(firstentrance);
+            restent = _.rest(entrance);
+            $('#screenfacing' + firstentrance).prop('checked', true);
+            $.each(restent, function(index, value) {
+              return $('#screenfacing' + value).prop('checked', false);
+            });
+            entrance = firstentrancearr;
+            App.defaults['facing'] = entrance.toString();
+            firstteraace = _.first(teraace);
+            firstteraacearr = [];
+            firstteraacearr.push(firstteraace);
+            restter = _.rest(teraace);
+            $('#screenterrace' + firstteraace).prop('checked', true);
+            $.each(restter, function(index, value) {
+              return $('#screenterrace' + value).prop('checked', false);
+            });
+            teraace = firstteraacearr;
+            App.defaults['terrace'] = teraace.toString();
+            $('#' + e.target.id).prop('checked', false);
+          } else {
+            view = cloneviews;
+            $.each(view, function(index, value) {
+              return $('#screenview' + value).prop('checked', true);
+            });
+            App.defaults['view'] = view.join(',');
+            entrance = clonefacings;
+            $.each(entrance, function(index, value) {
+              return $('#screenfacing' + value).prop('checked', true);
+            });
+            App.defaults['facing'] = entrance.join(',');
+            teraace = cloneterraces;
+            $.each(teraace, function(index, value) {
+              return $('#screenterrace' + value).prop('checked', true);
+            });
+            App.defaults['terrace'] = teraace.join(',');
+            uniqfacings = _.uniq(entrance);
+            uniqterrace = _.uniq(teraace);
+            uniqviews = _.uniq(view);
+            if (uniqfacings.length !== originalfacings.length) {
+              App.defaults['facing'] = uniqfacings.join(',');
+              entrance = uniqfacings;
+            } else {
+              entrance = uniqfacings;
+              App.defaults['facing'] = 'All';
+            }
+            if (uniqterrace.length !== originalterraces.length) {
+              App.defaults['terrace'] = uniqterrace.join(',');
+              teraace = uniqterrace;
+            } else {
+              teraace = uniqterrace;
+              App.defaults['terrace'] = 'All';
+            }
+            if (uniqviews.length !== originalviews.length) {
+              App.defaults['view'] = uniqviews.join(',');
+              view = uniqviews;
+            } else {
+              view = uniqviews;
+              App.defaults['view'] = 'All';
+            }
+            $('#' + e.target.id).prop('checked', true);
+          }
+          App.currentStore.unit.reset(UNITS);
+          App.currentStore.building.reset(BUILDINGS);
+          App.currentStore.unit_type.reset(UNITTYPES);
+          App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
+          App.filter();
+          mainunitTypeArray1 = [];
+          status = App.master.status.findWhere({
+            'name': 'Available'
+          });
+          units1 = App.master.unit.where({
+            'status': status.get('id')
+          });
+          $.each(units1, function(index, value) {
+            var unitType;
+            unitType = App.master.unit_type.findWhere({
+              id: value.get('unitType')
+            });
+            return mainunitTypeArray1.push({
+              id: unitType.get('id'),
+              name: unitType.get('name')
+            });
+          });
+          $.each(mainunitTypeArray1, function(key, item) {
+            var classname;
+            if (!mainunique[item.id]) {
+              if (item.id !== 14 && item.id !== 16) {
+                status = App.master.status.findWhere({
+                  'name': 'Available'
+                });
+                count = App.currentStore.unit.where({
+                  unitType: item.id,
+                  'status': status.get('id')
+                });
+                if (parseInt(item.id) === 9) {
+                  classname = 'twoBHK';
+                } else {
+                  classname = 'threeBHK';
+                }
+                mainnewarr.push({
+                  id: item.id,
+                  name: item.name,
+                  classname: classname,
+                  count: count
+                });
+                return mainunique[item.id] = item;
+              }
+            }
+          });
+          unittypetext = "";
+          $.each(mainnewarr, function(index, value) {
+            return unittypetext += '<span>' + value.name + ' :</span><span class="text-primary bold m-r-20">' + value.count.length + '</span>';
+          });
+          return $('#unittypecount1').html(unittypetext);
+        });
         $('.viewname').on('click', function(e) {
-          var facingtemp, floorCollection, index, teracetemp, terrace, uniqfacings, uniqterrace, unselected, unselected1, viewString, viewnames;
+          var facingtemp, floorCollection, index, teracetemp, uniqfacings, uniqterrace, unselected, unselected1, viewString, viewnames;
           mainnewarr = [];
           mainunique = {};
           viewnames = originalviews;
@@ -818,13 +1012,19 @@ define(['marionette'], function(Marionette) {
             viewString = view.join(',');
           }
           App.defaults['view'] = viewString;
-          if (cloneviews.length === view.length) {
+          if (originalviews.length === view.length) {
+            $('#unselectview').prop('checked', true);
             App.defaults['view'] = 'All';
+          } else {
+            $('#unselectview').prop('checked', false);
           }
           App.currentStore.unit.reset(UNITS);
           App.currentStore.building.reset(BUILDINGS);
           App.currentStore.unit_type.reset(UNITTYPES);
           App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
           App.filter();
           teracetemp = [];
           floorCollection = App.currentStore.unit;
@@ -833,7 +1033,7 @@ define(['marionette'], function(Marionette) {
             if (item.get('facing').length !== 0) {
               $.merge(facingtemp, item.get('facing'));
             }
-            if (item.get('terrace') !== "") {
+            if (item.get('terrace') !== "" && item.get('terrace') !== 0) {
               return teracetemp.push(item.get('terrace'));
             }
           });
@@ -848,16 +1048,18 @@ define(['marionette'], function(Marionette) {
           $.each(uniqfacings, function(index, value) {
             return $('#screenfacing' + value).prop('checked', true);
           });
-          if (uniqfacings.length !== clonefacings.length) {
+          if (uniqfacings.length !== originalfacings.length) {
             App.defaults['facing'] = uniqfacings.join(',');
             entrance = uniqfacings;
           } else {
+            entrance = uniqfacings;
             App.defaults['facing'] = 'All';
           }
-          if (uniqterrace.length !== cloneterraces.length) {
+          if (uniqterrace.length !== originalterraces.length) {
             App.defaults['terrace'] = uniqterrace.join(',');
-            terrace = uniqterrace;
+            teraace = uniqterrace;
           } else {
+            teraace = uniqterrace;
             App.defaults['terrace'] = 'All';
           }
           unselected = _.difference(clonefacings, uniqfacings);
@@ -871,6 +1073,11 @@ define(['marionette'], function(Marionette) {
           $.each(unselected1, function(index, value) {
             return $('#screenterrace' + value).prop('checked', false);
           });
+          if (App.defaults['view'] === 'All' && App.defaults['facing'] === 'All' && App.defaults['terrace'] === 'All') {
+            $('#unselectview').prop('checked', true);
+          } else {
+            $('#unselectview').prop('checked', false);
+          }
           mainunitTypeArray1 = [];
           status = App.master.status.findWhere({
             'name': 'Available'
@@ -928,6 +1135,9 @@ define(['marionette'], function(Marionette) {
           App.currentStore.building.reset(BUILDINGS);
           App.currentStore.unit_type.reset(UNITTYPES);
           App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
           if ($('#' + e.target.id).prop('checked') === true) {
             teraace.push($('#' + e.target.id).val());
           } else {
@@ -949,8 +1159,11 @@ define(['marionette'], function(Marionette) {
           });
           teraace = _.uniq(teraace);
           App.defaults['terrace'] = teraace.join(',');
-          if (cloneterraces.length === teraace.length) {
+          if (originalterraces.length === teraace.length) {
+            $('#unselectview').prop('checked', true);
             App.defaults['terrace'] = 'All';
+          } else {
+            $('#unselectview').prop('checked', false);
           }
           App.filter();
           units = App.currentStore.unit;
@@ -972,16 +1185,18 @@ define(['marionette'], function(Marionette) {
           });
           uniqviews = _.uniq(viewtemp);
           uniqfacings = _.uniq(facingtemp);
-          if (uniqviews.length !== cloneviews.length) {
+          if (uniqviews.length !== originalviews.length) {
             App.defaults['view'] = uniqviews.join(',');
             view = uniqviews;
           } else {
+            view = uniqviews;
             App.defaults['view'] = 'All';
           }
-          if (uniqfacings.length !== clonefacings.length) {
+          if (uniqfacings.length !== originalfacings.length) {
             App.defaults['facing'] = uniqfacings.join(',');
             entrance = uniqfacings;
           } else {
+            entrance = uniqfacings;
             App.defaults['facing'] = 'All';
           }
           $.each(uniqviews, function(index, value) {
@@ -998,6 +1213,11 @@ define(['marionette'], function(Marionette) {
           $.each(unselected, function(index, value) {
             return $('#screenfacing' + value).prop('checked', false);
           });
+          if (App.defaults['view'] === 'All' && App.defaults['facing'] === 'All' && App.defaults['terrace'] === 'All') {
+            $('#unselectview').prop('checked', true);
+          } else {
+            $('#unselectview').prop('checked', false);
+          }
           mainunitTypeArray1 = [];
           status = App.master.status.findWhere({
             'name': 'Available'
@@ -1048,7 +1268,7 @@ define(['marionette'], function(Marionette) {
           return $('#unittypecount1').html(unittypetext);
         });
         $('.facing').on('click', function(e) {
-          var facingString, first, floorCollection, index, teracetemp, terrace, uniqterrace, uniqviews, unselected, unselected1, viewtemp;
+          var facingString, floorCollection, index, teracetemp, uniqterrace, uniqviews, unselected, unselected1, viewtemp;
           mainnewarr = [];
           mainunique = {};
           if ($('#' + e.target.id).prop('checked') === true) {
@@ -1063,10 +1283,6 @@ define(['marionette'], function(Marionette) {
               entrance.splice(index, 1);
             }
           }
-          if (entrance.length === 0) {
-            first = _.first(originalOfacings);
-            entrance.push(first.id);
-          }
           entrance = entrance.map(function(item) {
             return parseInt(item);
           });
@@ -1075,13 +1291,19 @@ define(['marionette'], function(Marionette) {
             facingString = entrance.join(',');
           }
           App.defaults['facing'] = facingString;
-          if (clonefacings.length === entrance.length) {
+          if (originalfacings.length === entrance.length) {
+            $('#unselectview').prop('checked', true);
             App.defaults['facing'] = 'All';
+          } else {
+            $('#unselectview').prop('checked', false);
           }
           App.currentStore.unit.reset(UNITS);
           App.currentStore.building.reset(BUILDINGS);
           App.currentStore.unit_type.reset(UNITTYPES);
           App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
           App.filter();
           teracetemp = [];
           floorCollection = App.currentStore.unit;
@@ -1090,7 +1312,7 @@ define(['marionette'], function(Marionette) {
             if (item.get('apartment_views').length !== 0) {
               $.merge(viewtemp, item.get('apartment_views'));
             }
-            if (item.get('terrace') !== "") {
+            if (item.get('terrace') !== "" && item.get('terrace') !== 0) {
               return teracetemp.push(item.get('terrace'));
             }
           });
@@ -1102,16 +1324,18 @@ define(['marionette'], function(Marionette) {
           });
           uniqviews = _.uniq(viewtemp);
           uniqterrace = _.uniq(teracetemp);
-          if (uniqviews.length !== cloneviews.length) {
+          if (uniqviews.length !== originalviews.length) {
             App.defaults['view'] = uniqviews.join(',');
             view = uniqviews;
           } else {
+            view = uniqviews;
             App.defaults['view'] = 'All';
           }
-          if (uniqterrace.length !== cloneterraces.length) {
+          if (uniqterrace.length !== originalterraces.length) {
             App.defaults['terrace'] = uniqterrace.join(',');
-            terrace = uniqterrace;
+            teraace = uniqterrace;
           } else {
+            teraace = uniqterrace;
             App.defaults['terrace'] = 'All';
           }
           $.each(uniqviews, function(index, value) {
@@ -1128,6 +1352,11 @@ define(['marionette'], function(Marionette) {
           $.each(unselected1, function(index, value) {
             return $('#screenterrace' + value).prop('checked', false);
           });
+          if (App.defaults['view'] === 'All' && App.defaults['facing'] === 'All' && App.defaults['terrace'] === 'All') {
+            $('#unselectview').prop('checked', true);
+          } else {
+            $('#unselectview').prop('checked', false);
+          }
           mainunitTypeArray1 = [];
           status = App.master.status.findWhere({
             'name': 'Available'
@@ -1177,38 +1406,8 @@ define(['marionette'], function(Marionette) {
           });
           return $('#unittypecount1').html(unittypetext);
         });
+        objectele = this;
         $('#donepopupscreen').on('click', function(e) {
-          $('.specialFilter1').empty();
-          $('.specialFilter1').addClass('hidden');
-          $('.b-modal').addClass('hidden');
-          App.layout.screenFourRegion.el.innerHTML = "";
-          $('#screen-four-region').removeClass('section');
-          App.navigate("screen-three");
-          return object.trigger('unit:variants:selected');
-        });
-        $('#cancelpopupscreen').on('click', function(e) {
-          var terrace;
-          $('.specialFilter1').empty();
-          $('.specialFilter1').addClass('hidden');
-          $('.b-modal').addClass('hidden');
-          view = [];
-          entrance = [];
-          terrace = [];
-          $.each(cloneviews, function(index, value) {
-            $('#screenview' + value.id).prop('checked', true);
-            return view.push(value.id);
-          });
-          $.each(clonefacings, function(index, value) {
-            $('#screenfacings' + value.id).prop('checked', true);
-            return entrance.push(value.id);
-          });
-          $.each(cloneterraces, function(index, value) {
-            $('#screenterrace' + value.id).prop('checked', true);
-            return terrace.push(value.id);
-          });
-          App.defaults['view'] = 'All';
-          App.defaults['facing'] = 'All';
-          App.defaults['terrace'] = 'All';
           App.layout.screenFourRegion.el.innerHTML = "";
           $('#screen-four-region').removeClass('section');
           App.navigate("screen-three");
@@ -1216,8 +1415,94 @@ define(['marionette'], function(Marionette) {
           App.currentStore.building.reset(BUILDINGS);
           App.currentStore.unit_type.reset(UNITTYPES);
           App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
           App.filter();
-          return object.trigger('unit:variants:selected');
+          $('.specialFilter1').empty();
+          $('.specialFilter1').addClass('hidden');
+          $('.b-modal').addClass('hidden');
+          return objectele.trigger('unit:variants:selected');
+        });
+        $('#cancelpopupscreen').on('click', function(e) {
+          var facingtemp1, floorCollectionCur, terracetemp1, viewtemp1;
+          $('.specialFilter1').empty();
+          $('.specialFilter1').addClass('hidden');
+          $('.b-modal').addClass('hidden');
+          view = [];
+          entrance = [];
+          teraace = [];
+          App.filter();
+          floorCollectionCur = App.currentStore.unit;
+          viewtemp1 = [];
+          facingtemp1 = [];
+          terracetemp1 = [];
+          floorCollectionCur.each(function(item) {
+            if (item.get('unitType') !== 14 && item.get('unitType') !== 16) {
+              if (item.get('apartment_views') !== "") {
+                $.merge(viewtemp1, item.get('apartment_views'));
+              }
+              if (item.get('facing').length !== 0) {
+                $.merge(facingtemp1, item.get('facing'));
+              }
+              if (item.get('terrace') !== "") {
+                return terracetemp1.push(item.get('terrace'));
+              }
+            }
+          });
+          viewtemp1 = viewtemp1.map(function(item) {
+            return parseInt(item);
+          });
+          viewtemp1 = _.uniq(viewtemp1);
+          facingtemp1 = facingtemp1.map(function(item) {
+            return parseInt(item);
+          });
+          facingtemp1 = _.uniq(facingtemp1);
+          terracetemp1 = terracetemp1.map(function(item) {
+            return parseInt(item);
+          });
+          terracetemp1 = _.uniq(terracetemp1);
+          $.each(viewtemp1, function(index, value) {
+            $('#view' + value).prop('checked', true);
+            return view.push(value);
+          });
+          $.each(facingtemp1, function(index, value) {
+            $('#facings' + value).prop('checked', true);
+            return entrance.push(value);
+          });
+          $.each(terracetemp1, function(index, value) {
+            $('#terrace' + value).prop('checked', true);
+            return teraace.push(value);
+          });
+          console.log(originalOviews.length);
+          console.log(viewtemp1.length);
+          if (viewtemp1.length !== originalviews.length) {
+            App.defaults['view'] = viewtemp1.join(',');
+          } else {
+            App.defaults['view'] = 'All';
+          }
+          if (terracetemp1.length !== originalterraces.length) {
+            App.defaults['terrace'] = terracetemp1.join(',');
+          } else {
+            App.defaults['terrace'] = 'All';
+          }
+          if (facingtemp1.length !== originalfacings.length) {
+            App.defaults['facing'] = facingtemp1.join(',');
+          } else {
+            App.defaults['facing'] = 'All';
+          }
+          App.layout.screenFourRegion.el.innerHTML = "";
+          $('#screen-four-region').removeClass('section');
+          App.navigate("screen-three");
+          App.currentStore.unit.reset(UNITS);
+          App.currentStore.building.reset(BUILDINGS);
+          App.currentStore.unit_type.reset(UNITTYPES);
+          App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
+          App.filter();
+          return objectele.trigger('unit:variants:selected');
         });
       }
       unitVariantString = "";
@@ -1291,13 +1576,10 @@ define(['marionette'], function(Marionette) {
         $(".variantBox").slideToggle();
         $(".variantToggle").toggleClass("open");
       });
-      $(".grid-link2").click(function(e) {
-        $(this).toggleClass("selected");
-      });
-      console.log(unitVariantArray = Marionette.getOption(this, 'uintVariantId'));
+      unitVariantArray = Marionette.getOption(this, 'uintVariantId');
       unitVariantsArray = Marionette.getOption(this, 'unitVariants');
       unitVariantArrayColl = new Backbone.Collection(unitVariantsArray);
-      cloneunitVariantArrayColl = unitVariantArrayColl.clone();
+      cloneunitVariantArrayColl = unitVariantArray.slice(0);
       unitVariants = unitVariantArray;
       firstElement = _.first(unitVariantArray);
       globalUnitVariants = App.defaults['unitVariant'].split(',');
@@ -1331,7 +1613,6 @@ define(['marionette'], function(Marionette) {
           return selectedArray.push(value);
         });
       }
-      App.defaults['unitVariant'] = selectedArray.join(',');
       unitVariantString = "";
       if (unitVariantString === "All" || App.defaults['unitVariant'] === "All" || selectedArray.length === unitVariantArray.length) {
         $('#unselectall').prop('checked', true);
@@ -1430,7 +1711,10 @@ define(['marionette'], function(Marionette) {
         }
         this.doterraceListing();
       }
-      return object1 = this;
+      object1 = this;
+      object2 = this;
+      object3 = this;
+      return object4 = this;
     };
 
     $(document).on("click", ".closeButton1", function() {
@@ -1442,19 +1726,19 @@ define(['marionette'], function(Marionette) {
     $(document).on("click", ".closeButton5", function() {
       var theidtodel;
       theidtodel = $(this).parent('li').attr('id');
-      return object.delViewItem($('#' + theidtodel).attr('data-itemNum'));
+      return object2.delViewItem($('#' + theidtodel).attr('data-itemNum'));
     });
 
     $(document).on("click", ".closeButton6", function() {
       var theidtodel;
       theidtodel = $(this).parent('li').attr('id');
-      return object.delEntranceItem($('#' + theidtodel).attr('data-itemNum'));
+      return object3.delEntranceItem($('#' + theidtodel).attr('data-itemNum'));
     });
 
     $(document).on("click", ".closeButton7", function() {
       var theidtodel;
       theidtodel = $(this).parent('li').attr('id');
-      return object.delTerraceItem($('#' + theidtodel).attr('data-itemNum'));
+      return object4.delTerraceItem($('#' + theidtodel).attr('data-itemNum'));
     });
 
     ScreenThreeLayout.prototype.showMsg = function() {
@@ -1464,22 +1748,34 @@ define(['marionette'], function(Marionette) {
       });
     };
 
+    ScreenThreeLayout.prototype.showLayoutMsg = function() {
+      $('#layoutmsg').show();
+      return $('#layoutmsg').text('There are no flats available in this position').delay(2000).fadeOut(function(x) {
+        return $('layoutmsg').text("");
+      });
+    };
+
     ScreenThreeLayout.prototype.loadbuildingsvg = function() {
-      var buildinArray, building, buildingCollection, buildingModel, floor_layout_Basic, floorid, maxvalue, path, svgdata;
+      var buildinArray, building, buildingCollection, buildingModel, floor_layout_Basic, floorid, maxvalue, path, svgdata, trackposition;
       buildingCollection = Marionette.getOption(this, 'buildingCollection');
       buildinArray = buildingCollection.toArray();
-      console.log(building = _.first(buildinArray));
-      console.log(buildingModel = App.master.building.findWhere({
+      building = _.first(buildinArray);
+      buildingModel = App.master.building.findWhere({
         id: parseInt(building.get('id'))
-      }));
+      });
       svgdata = buildingModel.get('svgdata');
+      trackposition = Marionette.getOption(this, 'position');
       floor_layout_Basic = buildingModel.get('floor_layout_basic').image_url;
       maxvalue = Marionette.getOption(this, 'maxvalue');
       if (floor_layout_Basic !== "") {
         path = floor_layout_Basic;
         $('<div></div>').load(path, function(x) {
           $('#' + maxvalue.id).attr('class', 'floor-pos position');
-          return unitAssigedArray.push(maxvalue.id);
+          unitAssigedArray.push(maxvalue.id);
+          return $.each(trackposition, function(ind, val) {
+            $('#' + val).attr('class', 'other');
+            return $("#" + val).parent().removeAttr('data-target');
+          });
         }).appendTo("#floorsvg");
       } else {
         path = "";
@@ -1550,6 +1846,34 @@ define(['marionette'], function(Marionette) {
                   } else {
                     $('#' + temp[ii] + value1).attr('class', 'unit-hover range');
                     return $('#' + temp1[ii] + value1).attr('class', 'unit-hover range');
+                  }
+                });
+                $.map(indexvalue, function(index, value) {
+                  var idvalue, text, textid, unit, unittpe;
+                  if (App.unit['name'] !== "") {
+                    if (parseInt($('#' + temp[ii] + value).attr('data-value')) === App.unit['name']) {
+                      idvalue = $('#' + temp[ii] + value).attr('data-idvalue');
+                    } else if (parseInt($('#' + temp[ii] + value).attr('data-value')) === App.unit['name']) {
+                      idvalue = $('#' + temp[ii] + value).attr('data-idvalue');
+                    }
+                    if (parseInt(index) === parseInt(App.unit['name'])) {
+                      $("#" + idvalue + value).attr('class', 'selected-flat');
+                      if (idvalue === 'f') {
+                        textid = 't';
+                      } else {
+                        textid = 'tt';
+                      }
+                      $("#" + textid + value).attr('class', 'selected-flat');
+                      unit = App.master.unit.findWhere({
+                        id: parseInt(App.unit['name'])
+                      });
+                      unittpe = App.master.unit_type.findWhere({
+                        id: unit.get('unitType')
+                      });
+                      text = unit.get('name') + ' | ' + unittpe.get('name');
+                      $('#' + textid + value).html(text);
+                      return $("#" + textid + value).attr('x', '-30');
+                    }
                   }
                 });
                 rangClass = ['LOWRISE', 'MIDRISE', 'HIGHRISE'];
@@ -1664,7 +1988,7 @@ define(['marionette'], function(Marionette) {
     };
 
     ScreenThreeLayout.prototype.onShowRangeData = function(unitModel, collection) {
-      var buildinArray, building, buildingCollection, buildingModel, element, exceptionObject, floorLayoutimage, index, pos, unitcoll, _i, _j, _len, _len1;
+      var buildinArray, building, buildingCollection, buildingModel, element, exceptionObject, floorLayoutimage, index, pos, trackposition, unitcoll, _i, _j, _len, _len1;
       $('#floorsvg').text("");
       position = unitModel.get('unitAssigned');
       object = this;
@@ -1677,6 +2001,7 @@ define(['marionette'], function(Marionette) {
         });
       });
       buildingCollection = Marionette.getOption(this, 'buildingCollection');
+      trackposition = Marionette.getOption(this, 'position');
       buildinArray = buildingCollection.toArray();
       building = _.first(buildinArray);
       buildingModel = App.master.building.findWhere({
@@ -1703,7 +2028,11 @@ define(['marionette'], function(Marionette) {
       pos = unitModel.get('unitAssigned');
       $('<div></div>').load(floorLayoutimage, function(x) {
         $('#' + pos).attr('class', 'floor-pos position');
-        return unitAssigedArray.push(pos);
+        unitAssigedArray.push(pos);
+        return $.each(trackposition, function(ind, val) {
+          $('#' + val).attr('class', 'other');
+          return $("#" + val).parent().removeAttr('data-target');
+        });
       }).appendTo("#floorsvg");
       for (index = _i = 0, _len = unitAssigedArray.length; _i < _len; index = ++_i) {
         element = unitAssigedArray[index];
@@ -1890,12 +2219,16 @@ define(['marionette'], function(Marionette) {
           return unitvariantarrayValues.push(value.id);
         });
         App.layout.screenFourRegion.el.innerHTML = "";
+        $('#screen-four-region').removeClass('section');
         App.navigate("screen-three");
         App.defaults['unitVariant'] = unitvariantarrayValues.join(',');
         App.currentStore.unit.reset(UNITS);
         App.currentStore.building.reset(BUILDINGS);
         App.currentStore.unit_type.reset(UNITTYPES);
         App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         App.filter(params = {});
         return this.trigger('unit:variants:selected');
       }
@@ -1921,12 +2254,16 @@ define(['marionette'], function(Marionette) {
           return viewarrayValues.push(value.id);
         });
         App.layout.screenFourRegion.el.innerHTML = "";
+        $('#screen-four-region').removeClass('section');
         App.navigate("screen-three");
         App.defaults['view'] = viewarrayValues.join(',');
         App.currentStore.unit.reset(UNITS);
         App.currentStore.building.reset(BUILDINGS);
         App.currentStore.unit_type.reset(UNITTYPES);
         App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         App.filter(params = {});
         $('.specialFilter1').empty();
         $('.specialFilter1').addClass('hidden');
@@ -1955,12 +2292,16 @@ define(['marionette'], function(Marionette) {
           return entrancearrayValues.push(value.id);
         });
         App.layout.screenFourRegion.el.innerHTML = "";
+        $('#screen-four-region').removeClass('section');
         App.navigate("screen-three");
         App.defaults['facing'] = entrancearrayValues.join(',');
         App.currentStore.unit.reset(UNITS);
         App.currentStore.building.reset(BUILDINGS);
         App.currentStore.unit_type.reset(UNITTYPES);
         App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         App.filter(params = {});
         $('.specialFilter1').empty();
         $('.specialFilter1').addClass('hidden');
@@ -1989,12 +2330,16 @@ define(['marionette'], function(Marionette) {
           return terracearrayValues.push(value.id);
         });
         App.layout.screenFourRegion.el.innerHTML = "";
-        App.navigate("screen-two");
+        $('#screen-four-region').removeClass('section');
+        App.navigate("screen-three");
         App.defaults['terrace'] = terracearrayValues.join(',');
         App.currentStore.unit.reset(UNITS);
         App.currentStore.building.reset(BUILDINGS);
         App.currentStore.unit_type.reset(UNITTYPES);
         App.currentStore.unit_variant.reset(UNITVARIANTS);
+        App.currentStore.terrace.reset(TERRACEOPTIONS);
+        App.currentStore.view.reset(VIEWS);
+        App.currentStore.facings.reset(FACINGS);
         App.filter(params = {});
         $('.specialFilter1').empty();
         $('.specialFilter1').addClass('hidden');
@@ -2057,7 +2402,7 @@ define(['marionette'], function(Marionette) {
       return unitChildView.__super__.constructor.apply(this, arguments);
     }
 
-    unitChildView.prototype.template = '<div class="pull-left light"> <h5 class="rangeName bold m-t-5">Floor {{floor}}</h5> </div> <div class="pull-right text-center"> <div class="unitNo">{{name}}</div> <div class="small">{{unittypename}} {{sellablearea}} Sq.ft.</div> </div> <input type="hidden" id="flag{{id}}" name="flag{{id}}" value="0"/> <input type="hidden" id="select{{id}}" name="select{{id}}" value="0"/> <div class="clearfix"></div>';
+    unitChildView.prototype.template = '<div class="pull-left light"> <h5 class="rangeName bold m-t-5">Floor {{floor}}</h5> </div> <div class="pull-right text-center"> <div class="unitNo">{{name}}</div> <div class="small">{{unittypename}} {{sellablearea}} {{sqft}}</div> </div> <input type="hidden" id="flag{{id}}" name="flag{{id}}" value="0"/> <input type="hidden" id="select{{id}}" name="select{{id}}" value="0"/> <div class="clearfix"></div>';
 
     unitChildView.prototype.className = 'check';
 
@@ -2130,6 +2475,9 @@ define(['marionette'], function(Marionette) {
           App.currentStore.building.reset(BUILDINGS);
           App.currentStore.unit_type.reset(UNITTYPES);
           App.currentStore.unit_variant.reset(UNITVARIANTS);
+          App.currentStore.terrace.reset(TERRACEOPTIONS);
+          App.currentStore.view.reset(VIEWS);
+          App.currentStore.facings.reset(FACINGS);
           unitModel = App.master.unit.findWhere({
             id: this.model.get("id")
           });
@@ -2203,6 +2551,7 @@ define(['marionette'], function(Marionette) {
             $("#screen-three-button").removeClass('disabled btn-default');
             $("#screen-three-button").addClass('btn-primary');
           } else {
+            App.unit['name'] = "";
             rangeunitArray = [];
             $("#select" + this.model.get('id')).val("0");
             $('#check' + this.model.get('id')).removeClass('selected');

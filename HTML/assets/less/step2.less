@@ -186,9 +186,20 @@
 		opacity: 0.3;
 		cursor: default;
 		line-height: 53px;
+		&:hover{
+			border-color: lighten(@color-grey, 30%);
+			color: @color-grey;
+		}
 	}
 	&.sold{
-		color: lighten(@color-grey, 20%);
+		border-color: lighten(@color-grey, 30%);
+		color: darken(@color-danger, 10%);
+		cursor: default;
+		opacity: 0.8;
+		&:hover{
+			border-color: lighten(@color-grey, 30%);
+			color: darken(@color-danger, 10%);
+		}
 	}
 	&.threeBHK, &.twoBHK, &.oneBHK, &.multiBHK{
 		.unitCount:after{
@@ -286,7 +297,7 @@
 @media (max-width:767px){
 	.boxBlank{
 		height: 85px;
-		padding: 0 20px 0;
+		padding: 0 20px 0 5px;
 	}
 }
 

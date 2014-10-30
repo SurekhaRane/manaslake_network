@@ -56,6 +56,7 @@ require [ 'plugin-loader'
         'status': new Backbone.Collection  STATUS
         'facings': new Backbone.Collection  FACINGS
         'terrace': new Backbone.Collection  TERRACEOPTIONS
+        'paymentplans' : new Backbone.Collection PAYMENTPLANS
 
 
     # master store
@@ -68,6 +69,7 @@ require [ 'plugin-loader'
         'status': new Backbone.Collection  STATUS
         'facings': new Backbone.Collection  FACINGS
         'terrace': new Backbone.Collection  TERRACEOPTIONS
+        'paymentplans' : new Backbone.Collection PAYMENTPLANS
 
     # global variable to keep track of the filter the user has selected on the previous screen
     App.backFilter = {'screen1':[],'screen2':[],'screen3':[],'back':""}
@@ -218,6 +220,8 @@ require [ 'plugin-loader'
         for element , index in uniqviews
             viewModel = App.currentStore.view.get element
             viewArray.push viewModel
+
+            
         App.currentStore.building.reset buildingArray
         App.currentStore.unit_type.reset unittypeArray
         App.currentStore.unit_variant.reset unitvariantArray
@@ -265,6 +269,7 @@ require [ 'plugin-loader'
     if window.location.hash is ''
         App.filter()
         staticApps.push [ 'main:app', App.mainRegion ]
+        staticApps.push [ 'footer', App.footerRegion ]
 
 
 

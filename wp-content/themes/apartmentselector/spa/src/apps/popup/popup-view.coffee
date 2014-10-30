@@ -5,7 +5,7 @@ define [ 'marionette' ], ( Mariontte )->
 
         template : ' <ul>
         							<li class="unitName">
-        								<div class="small"> Tower 1</div>{{name}}
+        								<div class="small"> {{buidlingName}}</div>{{name}}
         							</li>
         						</ul>
 
@@ -39,13 +39,13 @@ define [ 'marionette' ], ( Mariontte )->
                                 <!--Area-->
                                 <ul>
                                     <li>
-                                        684
-                                    </li>
-                                    <li>
                                         {{sellablearea}}
                                     </li>
                                     <li>
                                         {{carpetarea}}
+                                    </li>
+                                    <li>
+                                        {{terracearea}}
                                     </li>
                                 </ul>
 
@@ -77,7 +77,7 @@ define [ 'marionette' ], ( Mariontte )->
                                         <a class="2dlayout" data-fancybox-group="3dlayout" title="3D Layout - {{name}}" href="{{ThreeDimage}}"><img src="{{ThreeDimage}}" alt=""></a>
                                     </li>
                                     <li>
-                                        <a class="2dlayout" data-fancybox-group="floorlayout" title="Floor Layout - {{name}}" href="{{floorLayoutimage}}"><img src="{{floorLayoutimage}}" alt=""></a>
+                                        <a class="2dlayout" data-fancybox-group="buildingposiiton" title="Building Position - {{name}}" href="{{BuildingPositionimage}}"><img src="{{BuildingPositionimage}}" alt=""></a>
                                     </li>
         						</ul>'
 
@@ -123,31 +123,22 @@ define [ 'marionette' ], ( Mariontte )->
                                     Total Area
                                 </li>
                                 <li>
-                                    Chargeable Area
+                                    Carpet Area
                                 </li>
                                 <li>
-                                    Carpet Area
+                                    Terrace Area
                                 </li>
                             </ul>
                             <div class="compareHeader"><span class="sky-expand"></span> Room Area <small>(Sq. Ft.)</small></div>
                             <ul>
-                                <li>
-                                    Living/Dining 
-                                </li>
-                                <li>
-                                    Bedroom
-                                </li>
-                                <li>
-                                    Bathroom
-                                </li>
-                                <li>
-                                    Terrace
-                                </li>
-                                <li>
-                                    Lobby
-                                </li>
-                                
-                            </ul>
+                                {{#selection}}
+                                    <li>
+
+                                    {{name}}
+                                   
+                                    </li>
+                                {{/selection}}    
+                                </ul>
             				<div class="compareHeader"><span class="glyphicon glyphicon-picture"></span> Layouts</div>
             				<ul>
                                 <li>
@@ -157,7 +148,7 @@ define [ 'marionette' ], ( Mariontte )->
                                     3D Layout
                                 </li>
                                 <li>
-                                    Floor Layout
+                                    Building Position
                                 </li>
             				</ul>
             			</header>
@@ -180,6 +171,7 @@ define [ 'marionette' ], ( Mariontte )->
                 e.preventDefault()
 
         onShow:->
+            $('#showRightPush').hide()
             $(".2dlayout").fancybox
                 margin: 90
 
