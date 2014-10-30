@@ -14,6 +14,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
     entrancetagsArray = []
     terracetagsArray = []
     object = 'this'
+
     class ScreenTwoLayout extends Marionette.LayoutView
 
         template : '<div class="">
@@ -43,9 +44,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 </div>
 
                                 {{#unitVariants}}
-                                <div class="grid-block-3" >
-                                    <a class="grid-link selected" href="#" id="grid{{id}}" data-id="{{id}}">
+                                <div class="grid-block-3 {{classname}}" >
+                                    <a class="grid-link {{selected}}" href="#" id="grid{{id}}" data-id="{{id}}" data-count = "{{count}}">
                                         {{sellablearea}} Sq.ft.<input type="hidden" name="check{{id}}"   id="check{{id}}"   value="1" />
+                                        <h5><span> {{filter}} : </span> {{count}}</h5>
                                     </a>
                                 </div>
                                 {{/unitVariants}}
@@ -115,15 +117,20 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         </div><input type="hidden" name="currency1" id="currency1" class="demo" data-a-sign="Rs. "  data-m-dec=""  data-d-group="2">
                     </div>
 
-                    <div class="specialFilter">
+                    <div class="specialFilter ">
                         <div class="bgClass">
                             <h3 class="text-center light">Choose from the options below to filter your selection</h3>
+                            <div class="pull-left m-l-15">
+                                <input type="checkbox" name="selectview" id="selectview" class="checkbox" value="0" checked/>
+                                <label for="selectview">Select/Unselect All</label>
+                            </div>
+                            <div class="clearfix"></div>
                             <div class="row m-l-0 m-r-0 filterBlock">
-
+                                
                                 <div class="col-sm-5 b-r b-grey">
                                     <h4 class="bold blockTitle">View</h4>
                                     {{#views}}
-                                    <div class="filterBox"> <input type="checkbox" name="view{{id}}" data-name="{{name}}" id="view{{id}}" checked class="checkbox viewname" value="{{id}}"> <label for="view{{id}}">{{name}}</label> </div>
+                                    <div class="filterBox {{classname}}"> <input type="checkbox" {{disabled}} name="view{{id}}" data-name="{{name}}" id="view{{id}}" {{checked}} class="checkbox viewname" value="{{id}}"> <label for="view{{id}}">{{name}}</label> </div>
                                     {{/views}}
                                     <div class="clearfix"></div>
                                 </div>
@@ -131,7 +138,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 <div class="col-sm-3 b-r b-grey">
                                     <h4 class="bold blockTitle">Entrance</h4>
                                         {{#facings}}
-                                    <div class="filterBox"> <input type="checkbox" name="facing{{id}}" data-name="{{name}}" id="facing{{id}}" checked class="checkbox facing" value="{{id}}"> <label for="facing{{id}}">{{name}}</label> </div>
+                                    <div class="filterBox {{classname}}"> <input type="checkbox" {{disabled}} name="facing{{id}}" data-name="{{name}}" id="facing{{id}}" {{checked}} class="checkbox facing" value="{{id}}"> <label for="facing{{id}}">{{name}}</label> </div>
                                     {{/facings}}
                                     <div class="clearfix"></div>
                                 </div>
@@ -139,7 +146,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 <div class="col-sm-4">
                                     <h4 class="bold blockTitle">Terrace</h4>
                                      {{#terrace}}   
-                                    <div class="filterBox"> <input type="checkbox" name="terrace{{id}}" data-name="{{name}}" id="terrace{{id}}" checked class="checkbox terrace" value="{{id}}"> <label for="terrace{{id}}">{{name}}</label> </div>
+                                    <div class="filterBox {{classname}}"> <input type="checkbox" {{disabled}} name="terrace{{id}}" data-name="{{name}}" id="terrace{{id}}" {{checked}} class="checkbox terrace" value="{{id}}"> <label for="terrace{{id}}">{{name}}</label> </div>
                                     {{/terrace}}  
                                 </div>
                             </div>
@@ -149,7 +156,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
                             <div class="text-center m-t-10 m-b-10">
                                 <a id="donepopup" class="btn btn-primary btn-sm b-close">DONE</a>
-                                <a id="cancelpopup" class="btn btn-primary btn-sm b-close">CANCEL</a>
+
+                               <!-- <a id="cancelpopup" class="btn btn-primary btn-sm b-close">CANCEL</a>-->
+
+                               
                             </div>
 
                         </div>
@@ -181,6 +191,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
         events:
             'click #filterModal':(e)->
                 # $('.specialFilter').text ""
+                if App.defaults['view'] == 'All' && App.defaults['facing'] == 'All' && App.defaults['terrace'] == 'All'
+                    $('#selectview').prop('checked',true)
+                else
+                    $('#selectview').prop('checked',false)
                 $('.specialFilter').bPopup()
 
             'mouseout .im-pin':(e)->
@@ -521,6 +535,9 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                     App.currentStore.building.reset BUILDINGS
                     App.currentStore.unit_type.reset UNITTYPES
                     App.currentStore.unit_variant.reset UNITVARIANTS
+                    App.currentStore.terrace.reset TERRACEOPTIONS
+                    App.currentStore.view.reset VIEWS
+                    App.currentStore.facings.reset FACINGS
                     
                     App.filter(params={})
                     msgbus.showApp 'header'
@@ -539,11 +556,15 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
             'click .grid-link':(e)->
                 count = unitVariantArray.length
                 id = $('#'+e.target.id).attr('data-id')
+                dataCount = $('#'+e.target.id).attr('data-count')
+                if parseInt(dataCount) == 0
+                    return false
                 track = 0
                 if $('#check'+id).val() == '1'
                     index = unitVariantArray.indexOf(parseInt(id))
                     if index != -1
                         unitVariantArray.splice( index, 1 )
+                        $('#'+e.target.id).removeClass 'selected'
                         $('#check'+id).val '0'
                         track = 0
                         unitVariantIdArray.push(parseInt(id))
@@ -551,10 +572,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                     track = 1
                     unitVariantArray.push(parseInt(id))
                     $('#check'+id).val '1'
+                    $('#'+e.target.id).addClass 'selected'
 
 
                 
-
                 if globalUnitArrayInt.length != 0
                     if track == 0
                         unitVariantArray = _.intersection(unitVariantArray,globalUnitArrayInt)
@@ -612,11 +633,14 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 App.currentStore.building.reset BUILDINGS
                 App.currentStore.unit_type.reset UNITTYPES
                 App.currentStore.unit_variant.reset UNITVARIANTS
+                App.currentStore.terrace.reset TERRACEOPTIONS
+                App.currentStore.view.reset VIEWS
+                App.currentStore.facings.reset FACINGS
                 if unitVariantString == ""
                     unitVariantString = 'All'
                 App.defaults['unitVariant'] = unitVariantString
                 # App.defaults['unittypeback'] = unitVariantString
-                #App.backFilter['screen2'].push 'unitVariant'
+                # App.backFilter['screen2'].push 'unitVariant'
                 App.filter(params={})
                 $('.specialFilter').empty()
                 $('.specialFilter').addClass 'hidden'
@@ -624,9 +648,9 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 @trigger 'unit:variants:selected'
 
             'click .cancel':(e)->
-                $('.specialFilter').empty()
-                $('.specialFilter').addClass 'hidden'
-                $('.b-modal').addClass 'hidden'
+                # $('.specialFilter').empty()
+                # $('.specialFilter').addClass 'hidden'
+                # $('.b-modal').addClass 'hidden'
                 unitVariantArray = _.union(unitVariantArray,unitVariantIdArray)
                 $(".variantBox1").slideToggle()
                 globalUnitVariants = App.defaults['unitVariant'].split(',')
@@ -635,7 +659,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                     globalUnitArrayInt.push(parseInt(value))
 
                 )
-
+                
                 if App.defaults['unitVariant'] != 'All'
                     $.each(unitVariantArray, (index,value)->
                         key = _.contains(globalUnitArrayInt,parseInt(value))
@@ -654,26 +678,36 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
 
                     )
+                else
+                    globalUnitArrayInt = unitVariantArray
+                    $.each(unitVariantArray, (index,value)->
+                        $('#grid'+value).addClass 'selected'
+                        $('#check'+value).val '1'
+
+                        )
+                $('#selectall').prop 'checked' , true
 
             'click #selectall':(e)->
+                
                 if $('#'+e.target.id).prop('checked') == true
-                    cloneunitVariantArrayColl.each ( index)->
-                        $('#grid'+index.get('id')).addClass 'selected'
-                        $('#check'+index.get('id')).val '1'
+                    $.each(cloneunitVariantArrayColl, (index,value)->
+                        $('#grid'+value).addClass 'selected'
+                        $('#check'+value).val '1'
 
-                        unitVariantArray.push(index.get('id'))
+                        unitVariantArray.push(value)
+                    )
                     unitVariantArray = _.uniq(unitVariantArray)
-                    units = cloneunitVariantArrayColl.toArray()
-                    units.sort(  (a,b)->
-                        a.get('id') - b.get('id')
+                    # units = cloneunitVariantArrayColl.toArray()
+                    cloneunitVariantArrayColl.sort(  (a,b)->
+                        a - b
                     )
                     unitVariantString = 'All'
                 else
                     tempArray = []
-                    cloneunitVariantArrayColl.each ( value)->
-                        tempArray.push(parseInt(value.get('id')))
+                    $.each(cloneunitVariantArrayColl, (index,value)->
+                        tempArray.push(parseInt(value))
 
-
+                    )
                     value = _.first(tempArray)
                     remainainArray = _.rest(tempArray)
                     $.each(remainainArray, (index,value)->
@@ -682,6 +716,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         index = unitVariantArray.indexOf(parseInt(value))
                         if index != -1
                             unitVariantArray.splice( index, 1 )
+                            unitVariantIdArray.push(parseInt(value))
 
 
                     )
@@ -723,6 +758,9 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
 
         onShow:->
+            # $('.specialFilter').empty()
+            # $('.specialFilter').addClass 'hidden'
+            # $('.b-modal').addClass 'hidden'
             viewtagsArray = []
             entrancetagsArray = []
             terracetagsArray = []
@@ -769,60 +807,60 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
                     )
                 if App.defaults['view'] != 'All'
-                    $.each(originalOviews,(index,value)->
+                    $.each(originalviews,(index,value)->
                         
                        
-                            if $.inArray(parseInt(value.id),globalviewInt) >=0 
-                                $('#view'+value.id).prop('checked',true)
-                                view.push(value.id)
+                            if $.inArray(parseInt(value),globalviewInt) >=0 
+                                $('#view'+value).prop('checked',true)
+                                view.push(value)
                             else
-                                $('#view'+value.id).prop('checked',false)
+                                $('#view'+value).prop('checked',false)
 
                             
 
                         )
                 else
-                    $.each(originalOviews,(index,value)->
-                        $('#view'+value.id).prop('checked',true)
-                        view.push(value.id)
+                    $.each(originalviews,(index,value)->
+                        $('#view'+value).prop('checked',true)
+                        view.push(value)
 
                         )
                 if App.defaults['facing'] != 'All'
-                    $.each(originalOfacings,(index,value)->
+                    $.each(originalfacings,(index,value)->
                         
                        
-                            if $.inArray(parseInt(value.id),globalfacingInt) >=0 
-                                $('#facing'+value.id).prop('checked',true)
-                                entrance.push(value.id)
+                            if $.inArray(parseInt(value),globalfacingInt) >=0 
+                                $('#facing'+value).prop('checked',true)
+                                entrance.push(value)
                             else
-                                $('#facing'+value.id).prop('checked',false)
+                                $('#facing'+value).prop('checked',false)
 
                             
 
                         )
                 else
-                    $.each(originalOfacings,(index,value)->
-                        $('#facing'+value.id).prop('checked',true)
-                        entrance.push(value.id)
+                    $.each(originalfacings,(index,value)->
+                        $('#facing'+value).prop('checked',true)
+                        entrance.push(value)
 
                         )
                 if App.defaults['terrace'] != 'All'
-                    $.each(originalOterraces,(index,value)->
+                    $.each(originalterraces,(index,value)->
                         
                        
-                            if $.inArray(parseInt(value.id),globalterraceInt) >=0 
-                                $('#terrace'+value.id).prop('checked',true)
-                                teraace.push(value.id)
+                            if $.inArray(parseInt(value),globalterraceInt) >=0 
+                                $('#terrace'+value).prop('checked',true)
+                                teraace.push(value)
                             else
-                                $('#terrace'+value.id).prop('checked',false)
+                                $('#terrace'+value).prop('checked',false)
 
                             
 
                         )
                 else
-                    $.each(originalOterraces,(index,value)->
-                        $('#terrace'+value.id).prop('checked',true)
-                        teraace.push(value.id)
+                    $.each(originalterraces,(index,value)->
+                        $('#terrace'+value).prop('checked',true)
+                        teraace.push(value)
 
                         )
                 mainnewarr =  []
@@ -859,6 +897,141 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
                 )
                 $('#unittypecount').html unittypetext
+
+                $('#selectview').on('click' , (e)->
+                    mainnewarr =  []
+                    mainunique = {}
+                    if $('#'+e.target.id).prop('checked') != true
+                        firstview = _.first(view)
+                        firstviewarr = []
+                        firstviewarr.push firstview
+                        rest = _.rest(view)
+                        $('#view'+firstview).prop('checked',true)
+                        $.each(rest, (index,value)->
+                  
+                                    $('#view'+value).prop('checked',false)
+
+                                )
+                        view = firstviewarr
+                        App.defaults['view'] = view.toString()
+
+                        firstentrance = _.first(entrance)
+                        firstentrancearr = []
+                        firstentrancearr.push firstentrance
+                        restent = _.rest(entrance)
+                        $('#facing'+firstentrance).prop('checked',true)
+                        $.each(restent, (index,value)->
+                  
+                                    $('#facing'+value).prop('checked',false)
+
+                                )
+                        entrance = firstentrancearr
+                        App.defaults['facing'] = entrance.toString()
+
+                        firstteraace = _.first(teraace)
+                        firstteraacearr = []
+                        firstteraacearr.push firstteraace
+                        restter = _.rest(teraace)
+                        $('#terrace'+firstteraace).prop('checked',true)
+                        $.each(restter, (index,value)->
+                  
+                                    $('#terrace'+value).prop('checked',false)
+
+                                )
+                        teraace = firstteraacearr
+                        App.defaults['terrace'] = teraace.toString()
+                        $('#'+e.target.id).prop('checked' ,false)
+                    else
+                        view = cloneviews
+                        $.each(view, (index,value)->
+                  
+                                    $('#view'+value).prop('checked',true)
+
+                                )
+                        App.defaults['view'] = view.join(',')
+
+                        entrance = clonefacings
+                        $.each(entrance, (index,value)->
+                  
+                                    $('#facing'+value).prop('checked',true)
+
+                                )
+                        App.defaults['facing'] = entrance.join(',')
+
+                        teraace = cloneterraces
+                        $.each(teraace, (index,value)->
+                  
+                                    $('#terrace'+value).prop('checked',true)
+
+                                )
+                        App.defaults['terrace'] = teraace.join(',')
+                        uniqfacings = _.uniq(entrance)
+                        uniqterrace = _.uniq(teraace)
+                        uniqviews = _.uniq(view)
+                        if uniqfacings.length != originalfacings.length
+                            App.defaults['facing'] = uniqfacings.join(',')
+                            entrance = uniqfacings
+                            #App.backFilter['screen2'].push 'facing'
+                        else
+                            entrance = uniqfacings
+                            App.defaults['facing'] = 'All'
+                        if uniqterrace.length != originalterraces.length
+                            App.defaults['terrace'] = uniqterrace.join(',')
+                            teraace = uniqterrace
+                            #App.backFilter['screen2'].push 'terrace'
+                        else
+                            teraace = uniqterrace
+                            App.defaults['terrace'] = 'All'
+                        if uniqviews.length != originalviews.length
+                            App.defaults['view'] = uniqviews.join(',')
+                            view = uniqviews
+                            #App.backFilter['screen2'].push 'terrace'
+                        else
+                            view = uniqviews
+                            App.defaults['view'] = 'All'
+                        $('#'+e.target.id).prop('checked' ,true)
+                    App.currentStore.unit.reset UNITS
+                    App.currentStore.building.reset BUILDINGS
+                    App.currentStore.unit_type.reset UNITTYPES
+                    App.currentStore.unit_variant.reset UNITVARIANTS
+                    App.currentStore.terrace.reset TERRACEOPTIONS
+                    App.currentStore.view.reset VIEWS
+                    App.currentStore.facings.reset FACINGS
+                    App.filter()
+                    mainunitTypeArray1 = []
+                    status = App.master.status.findWhere({'name':'Available'})
+                    units1 = App.master.unit.where({'status':status.get('id')})
+                    $.each(units1, (index,value)->
+                            unitType = App.master.unit_type.findWhere({id:value.get 'unitType'})
+                            mainunitTypeArray1.push({id:unitType.get('id'),name: unitType.get('name')})
+                    )
+                    $.each(mainunitTypeArray1, (key,item)->
+                            if (!mainunique[item.id])
+                                if item.id != 14 && item.id != 16
+                                    status = App.master.status.findWhere({'name':'Available'})
+
+                                    count = App.currentStore.unit.where({unitType:item.id,'status':status.get('id')})
+
+                                    if parseInt(item.id) == 9
+                                        classname = 'twoBHK'
+                                    else
+                                        classname = 'threeBHK'
+
+                                    mainnewarr.push({id:item.id,name:item.name,classname:classname,count:count})
+                                    mainunique[item.id] = item;
+
+
+                    )
+                        
+                    unittypetext = ""
+                    $.each(mainnewarr, (index,value)->
+                                unittypetext  += '<span>'+value.name+' :</span><span class="text-primary bold m-r-20">'+value.count.length+'</span>'
+
+
+                        )
+                    $('#unittypecount').html unittypetext
+
+                    )
                 $('.viewname').on('click' , (e)->
                         App.layout.screenThreeRegion.el.innerHTML = ""
                         App.layout.screenFourRegion.el.innerHTML = ""
@@ -904,14 +1077,21 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                             viewString = view.join(',')
                         App.defaults['view'] = viewString
                         #App.backFilter['screen2'].push 'view'
-                        if cloneviews.length  == view.length
+                        if originalviews.length  == view.length
+                            $('#selectview').prop('checked',true)
                             App.defaults['view'] = 'All'
+                        else
+                            $('#selectview').prop('checked',false)
                             # vew = originalviews
-                            
+                        # App.defaults['terrace'] = 'All'
+                        # App.defaults['facing'] = 'All' 
                         App.currentStore.unit.reset UNITS
                         App.currentStore.building.reset BUILDINGS
                         App.currentStore.unit_type.reset UNITTYPES
-                        App.currentStore.unit_variant.reset UNITVARIANTS   
+                        App.currentStore.unit_variant.reset UNITVARIANTS
+                        App.currentStore.terrace.reset TERRACEOPTIONS
+                        App.currentStore.view.reset VIEWS
+                        App.currentStore.facings.reset FACINGS   
                         App.filter()
                         teracetemp = []
                         floorCollection = App.currentStore.unit
@@ -920,7 +1100,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         floorCollection.each ( item)->
                             if item.get('facing').length != 0
                                 $.merge(facingtemp,item.get('facing'))
-                            if item.get('terrace') != ""
+                            if item.get('terrace') != "" && item.get('terrace') != 0
                                 teracetemp.push item.get('terrace')
                         facingtemp = facingtemp.map((item)->
                             return parseInt(item)
@@ -936,17 +1116,19 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 $('#facing'+value).prop('checked',true)
 
                         )
-                        if uniqfacings.length != clonefacings.length
+                        if uniqfacings.length != originalfacings.length
                             App.defaults['facing'] = uniqfacings.join(',')
                             entrance = uniqfacings
                             #App.backFilter['screen2'].push 'facing'
                         else
+                            entrance = uniqfacings
                             App.defaults['facing'] = 'All'
-                        if uniqterrace.length != cloneterraces.length
+                        if uniqterrace.length != originalterraces.length
                             App.defaults['terrace'] = uniqterrace.join(',')
-                            terrace = uniqterrace
+                            teraace = uniqterrace
                             #App.backFilter['screen2'].push 'terrace'
                         else
+                            teraace = uniqterrace
                             App.defaults['terrace'] = 'All'
 
                         unselected = _.difference(clonefacings, uniqfacings);
@@ -963,6 +1145,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 $('#terrace'+value).prop('checked',false)
 
                             )
+                        if App.defaults['view'] == 'All' && App.defaults['facing'] == 'All' && App.defaults['terrace'] == 'All'
+                            $('#selectview').prop('checked',true)
+                        else
+                            $('#selectview').prop('checked',false)
                         mainunitTypeArray1 = []
                         status = App.master.status.findWhere({'name':'Available'})
                         units1 = App.master.unit.where({'status':status.get('id')})
@@ -1017,7 +1203,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         App.currentStore.unit.reset UNITS
                         App.currentStore.building.reset BUILDINGS
                         App.currentStore.unit_type.reset UNITTYPES
-                        App.currentStore.unit_variant.reset UNITVARIANTS   
+                        App.currentStore.unit_variant.reset UNITVARIANTS
+                        App.currentStore.terrace.reset TERRACEOPTIONS
+                        App.currentStore.view.reset VIEWS
+                        App.currentStore.facings.reset FACINGS   
                         
                         if $('#'+e.target.id).prop('checked') == true
                             teraace.push $('#'+e.target.id).val()
@@ -1030,18 +1219,22 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                             if index != -1
                                 teraace.splice( index, 1 )
                                 
-                        if teraace.length == 0
-                            first = _.first(originalOterraces)
-                            teraace.push first.id
+                        # if teraace.length == 0
+                        #     first = _.first(originalOterraces)
+                        #     teraace.push first.id
                         teraace = teraace.map((item)->
                             return parseInt(item))
                         teraace = _.uniq(teraace)
                         App.defaults['terrace'] = teraace.join(',')
                         #App.backFilter['screen2'].push 'terrace'
-                        if cloneterraces.length  == teraace.length
+                        if originalterraces.length  == teraace.length
+                            $('#selectview').prop('checked',true)
                             App.defaults['terrace'] = 'All'
+                        else
+                            $('#selectview').prop('checked',false)
                             # teraace = originalterraces
-                            
+                        # App.defaults['view'] = 'All'
+                        # App.defaults['facing'] = 'All' 
                         App.filter()
                         units = App.currentStore.unit
                         viewtemp = []
@@ -1064,17 +1257,19 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         
                         uniqviews = _.uniq(viewtemp)
                         uniqfacings = _.uniq(facingtemp)
-                        if uniqviews.length != cloneviews.length
+                        if uniqviews.length != originalviews.length
                             App.defaults['view'] = uniqviews.join(',')
                             view = uniqviews
                             #App.backFilter['screen2'].push 'view'
                         else
+                            view = uniqviews
                             App.defaults['view'] = 'All'
-                        if uniqfacings.length != clonefacings.length
+                        if uniqfacings.length != originalfacings.length
                             App.defaults['facing'] = uniqfacings.join(',')
                             entrance = uniqfacings
                             #App.backFilter['screen2'].push 'facing'
                         else
+                            entrance = uniqfacings
                             App.defaults['facing'] = 'All'
                         $.each(uniqviews, (index,value)->
                                 $('#view'+value).prop('checked',true)
@@ -1094,6 +1289,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 $('#facing'+value).prop('checked',false)
 
                         )
+                        if App.defaults['view'] == 'All' && App.defaults['facing'] == 'All' && App.defaults['terrace'] == 'All'
+                            $('#selectview').prop('checked',true)
+                        else
+                            $('#selectview').prop('checked',false)
                         mainunitTypeArray1 = []
                         status = App.master.status.findWhere({'name':'Available'})
                         units1 = App.master.unit.where({'status':status.get('id')})
@@ -1146,6 +1345,13 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 if key == true
                                     App.defaults[element] = 'All'
                         App.navigate "screen-two"
+                        App.currentStore.unit.reset UNITS
+                        App.currentStore.building.reset BUILDINGS
+                        App.currentStore.unit_type.reset UNITTYPES
+                        App.currentStore.unit_variant.reset UNITVARIANTS
+                        App.currentStore.terrace.reset TERRACEOPTIONS
+                        App.currentStore.view.reset VIEWS
+                        App.currentStore.facings.reset FACINGS
                         mainnewarr =  []
                         mainunique = {}
                         
@@ -1161,9 +1367,9 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                             if index != -1
                                 entrance.splice( index, 1 )
                                 
-                        if entrance.length == 0
-                            first = _.first(originalOfacings)
-                            entrance.push first.id
+                        # if entrance.length == 0
+                        #     first = _.first(originalOfacings)
+                        #     entrance.push first.id
                         entrance = entrance.map((item)->
                             return parseInt(item))
                         entrance = _.uniq(entrance)
@@ -1172,14 +1378,15 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         App.defaults['facing'] = facingString
                         #App.backFilter['screen2'].push 'facing'
                         
-                        if clonefacings.length  == entrance.length
+                        if originalterraces.length  == entrance.length
+                            $('#selectview').prop('checked',true)
                             App.defaults['facing'] = 'All'
+                        else
+                            $('#selectview').prop('checked',false)
                             # entrance = originalfacings
                             
-                        App.currentStore.unit.reset UNITS
-                        App.currentStore.building.reset BUILDINGS
-                        App.currentStore.unit_type.reset UNITTYPES
-                        App.currentStore.unit_variant.reset UNITVARIANTS   
+                        # App.defaults['terrace'] = 'All'
+                        # App.defaults['view'] = 'All'  
                         App.filter()
                         teracetemp = []
                         floorCollection = App.currentStore.unit
@@ -1188,7 +1395,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                         floorCollection.each ( item)->
                             if item.get('apartment_views').length != 0
                                 $.merge(viewtemp,item.get('apartment_views'))
-                            if item.get('terrace') != ""
+                            if item.get('terrace') != "" && item.get('terrace') != 0
                                 teracetemp.push item.get('terrace')
                         viewtemp = viewtemp.map((item)->
                             return parseInt(item))
@@ -1198,17 +1405,19 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                             )
                         uniqviews = _.uniq(viewtemp)
                         uniqterrace = _.uniq(teracetemp)
-                        if uniqviews.length != cloneviews.length
+                        if uniqviews.length != originalviews.length
                             App.defaults['view'] = uniqviews.join(',')
                             view = uniqviews
                             #App.backFilter['screen2'].push 'view'
                         else
+                            view = uniqviews
                             App.defaults['view'] = 'All'
-                        if uniqterrace.length != cloneterraces.length
+                        if uniqterrace.length != originalterraces.length
                             App.defaults['terrace'] = uniqterrace.join(',')
-                            terrace = uniqterrace
+                            teraace = uniqterrace
                             #App.backFilter['screen2'].push 'terrace'
                         else
+                            teraace = uniqterrace
                             App.defaults['terrace'] = 'All'
                         $.each(uniqviews, (index,value)->
                                 $('#view'+value).prop('checked',true)
@@ -1228,6 +1437,10 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                                 $('#terrace'+value).prop('checked',false)
 
                             )
+                        if App.defaults['view'] == 'All' && App.defaults['facing'] == 'All' && App.defaults['terrace'] == 'All'
+                            $('#selectview').prop('checked',true)
+                        else
+                            $('#selectview').prop('checked',false)
                         mainunitTypeArray1 = []
                         status = App.master.status.findWhere({'name':'Available'})
                         units1 = App.master.unit.where({'status':status.get('id')})
@@ -1269,46 +1482,140 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 
                      
                 $('#donepopup').on('click' , (e)->
-                            $('.specialFilter').empty()
-                            $('.specialFilter').addClass 'hidden'
-                            $('.b-modal').addClass 'hidden'
-                            console.log object
-                            object.trigger 'unit:variants:selected'
-                )
-                $('#cancelpopup').on('click' , (e)->
-                            $('.specialFilter').empty()
-                            $('.specialFilter').addClass 'hidden'
-                            $('.b-modal').addClass 'hidden'
-                            view = []
-                            entrance = []
-                            terrace = []
-                            $.each(cloneviews,(index,value)->
-                                $('#view'+value.id).prop('checked',true)
-                                view.push(value.id)
-
-                            )
-                            $.each(clonefacings,(index,value)->
-                                $('#facings'+value.id).prop('checked',true)
-                                entrance.push(value.id)
-
-                            )
-                            $.each(cloneterraces,(index,value)->
-                                $('#terrace'+value.id).prop('checked',true)
-                                terrace.push(value.id)
-
-                            )
-                            App.defaults['view'] = 'All'
-                            App.defaults['facing'] = 'All'
-                            App.defaults['terrace'] = 'All'
                             App.layout.screenThreeRegion.el.innerHTML = ""
                             App.layout.screenFourRegion.el.innerHTML = ""
                             $('#screen-three-region').removeClass 'section'
                             $('#screen-four-region').removeClass 'section' 
+                            screentwoArray  = App.backFilter['screen2']
+                            for element in screentwoArray
+                                    key = App.defaults.hasOwnProperty(element)
+                                    if key == true
+                                        App.defaults[element] = 'All'
+                            screenthreeArray  = App.backFilter['screen3']
+                            for element in screenthreeArray
+                                    key = App.defaults.hasOwnProperty(element)
+                                    if key == true
+                                        App.defaults[element] = 'All'
+                            App.navigate "screen-two"
                             App.navigate "screen-two"
                             App.currentStore.unit.reset UNITS
                             App.currentStore.building.reset BUILDINGS
                             App.currentStore.unit_type.reset UNITTYPES
                             App.currentStore.unit_variant.reset UNITVARIANTS
+                            App.currentStore.terrace.reset TERRACEOPTIONS
+                            App.currentStore.view.reset VIEWS
+                            App.currentStore.facings.reset FACINGS
+                            App.filter()
+                            $('.specialFilter').empty()
+                            $('.specialFilter').addClass 'hidden'
+                            $('.b-modal').addClass 'hidden'
+                            object.trigger 'unit:variants:selected'
+                )
+                $('#cancelpopup').on('click' , (e)->
+                            App.layout.screenThreeRegion.el.innerHTML = ""
+                            App.layout.screenFourRegion.el.innerHTML = ""
+                            $('#screen-three-region').removeClass 'section'
+                            $('#screen-four-region').removeClass 'section' 
+                            screentwoArray  = App.backFilter['screen2']
+                            for element in screentwoArray
+                                    key = App.defaults.hasOwnProperty(element)
+                                    if key == true
+                                        App.defaults[element] = 'All'
+                            screenthreeArray  = App.backFilter['screen3']
+                            for element in screenthreeArray
+                                    key = App.defaults.hasOwnProperty(element)
+                                    if key == true
+                                        App.defaults[element] = 'All'
+                            App.navigate "screen-two"
+                            App.currentStore.unit.reset UNITS
+                            App.currentStore.building.reset BUILDINGS
+                            App.currentStore.unit_type.reset UNITTYPES
+                            App.currentStore.unit_variant.reset UNITVARIANTS
+                            App.currentStore.terrace.reset TERRACEOPTIONS
+                            App.currentStore.view.reset VIEWS
+                            App.currentStore.facings.reset FACINGS
+                            $('.specialFilter').empty()
+                            $('.specialFilter').addClass 'hidden'
+                            $('.b-modal').addClass 'hidden'
+                            view = []
+                            entrance = []
+                            teraace = []
+                            # App.defaults['view'] = "All"
+                            # App.defaults['facing'] = "All"
+                            # App.defaults['terrace'] = "All"
+                            App.filter()
+                            floorCollectionCur = App.currentStore.unit
+                            viewtemp1 = []
+                            facingtemp1 = []
+                            terracetemp1  = []
+                            
+                            floorCollectionCur.each (item)->
+                                if item.get('unitType') != 14 && item.get('unitType') != 16
+                                    if item.get('apartment_views') != ""
+                                        $.merge(viewtemp1,item.get('apartment_views'))
+                                    if item.get('facing').length != 0
+                                        $.merge(facingtemp1,item.get('facing'))
+                                    if item.get('terrace') != ""
+                                        terracetemp1.push item.get('terrace')
+
+                            viewtemp1 = viewtemp1.map((item)->
+                                return parseInt(item)
+                                )
+                            viewtemp1 = _.uniq(viewtemp1)
+                            facingtemp1 = facingtemp1.map((item)->
+                                return parseInt(item)
+                                )
+                            facingtemp1 = _.uniq(facingtemp1)
+                            terracetemp1 = terracetemp1.map((item)->
+                                return parseInt(item)
+                                )
+                            terracetemp1 = _.uniq(terracetemp1)
+                            $.each(viewtemp1,(index,value)->
+                                $('#view'+value).prop('checked',true)
+                                view.push(value)
+
+                            )
+                            $.each(facingtemp1,(index,value)->
+                                $('#facings'+value).prop('checked',true)
+                                entrance.push(value)
+
+                            )
+                            $.each(terracetemp1,(index,value)->
+                                $('#terrace'+value).prop('checked',true)
+                                teraace.push(value)
+
+                            )
+                            
+                            if viewtemp1.length != originalviews.length
+                                App.defaults['view'] = viewtemp1.join(',')
+                            else
+                                App.defaults['view'] = 'All'
+                            if terracetemp1.length != originalterraces.length
+                                App.defaults['terrace'] = terracetemp1.join(',')
+                                
+                            else
+                                App.defaults['terrace'] = 'All'
+                            if facingtemp1.length != originalfacings.length
+                                App.defaults['facing'] = facingtemp1.join(',')
+                                
+                            else
+                                App.defaults['facing'] = 'All'
+                            # App.defaults['view'] = cloneviews.join(',')
+                            # App.defaults['facing'] = clonefacings.join(',')
+                            # App.defaults['terrace'] = cloneterraces.join(',')
+                            App.layout.screenThreeRegion.el.innerHTML = ""
+                            App.layout.screenFourRegion.el.innerHTML = ""
+                            $('#screen-three-region').removeClass 'section'
+                            $('#screen-four-region').removeClass 'section' 
+                            App.navigate "screen-two"
+                            
+                            App.currentStore.unit.reset UNITS
+                            App.currentStore.building.reset BUILDINGS
+                            App.currentStore.unit_type.reset UNITTYPES
+                            App.currentStore.unit_variant.reset UNITVARIANTS
+                            App.currentStore.terrace.reset TERRACEOPTIONS
+                            App.currentStore.view.reset VIEWS
+                            App.currentStore.facings.reset FACINGS
                             App.filter()
                             object.trigger 'unit:variants:selected'
 
@@ -1370,8 +1677,8 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
             unitVariantArray  = Marionette.getOption( @, 'uintVariantId' )
             unitVariantsArray  = Marionette.getOption( @, 'unitVariants' )
-            unitVariantArrayColl = new Backbone.Collection unitVariantsArray
-            cloneunitVariantArrayColl = unitVariantArrayColl.clone()
+            unitVariantArrayColl = new Backbone.Collection unitVariantArray
+            cloneunitVariantArrayColl = unitVariantArray.slice(0)
             unitVariants  = unitVariantArray
 
             firstElement = _.first(unitVariantArray)
@@ -1408,9 +1715,9 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 $(".variantToggle1").toggleClass("open")
                 return
 
-            $(".grid-link").click  (e)->
-                $(this).toggleClass("selected")
-                return
+            # $(".grid-link").click  (e)->
+            #     $(this).toggleClass("selected")
+            #     return
 
 
 
@@ -1617,12 +1924,19 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 )
                 App.layout.screenThreeRegion.el.innerHTML = ""
                 App.layout.screenFourRegion.el.innerHTML = ""
+
+                $('#screen-three-region').removeClass 'section'
+                $('#screen-four-region').removeClass 'section'
                 App.navigate "screen-two"
                 App.defaults['unitVariant'] = unitvariantarrayValues.join(',')
+                App.navigate "screen-two"
                 App.currentStore.unit.reset UNITS
                 App.currentStore.building.reset BUILDINGS
                 App.currentStore.unit_type.reset UNITTYPES
                 App.currentStore.unit_variant.reset UNITVARIANTS
+                App.currentStore.terrace.reset TERRACEOPTIONS
+                App.currentStore.view.reset VIEWS
+                App.currentStore.facings.reset FACINGS
                 App.filter(params={})
                 @trigger 'unit:variants:selected'
 
@@ -1664,12 +1978,17 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 )
                 App.layout.screenThreeRegion.el.innerHTML = ""
                 App.layout.screenFourRegion.el.innerHTML = ""
+                $('#screen-three-region').removeClass 'section'
+                $('#screen-four-region').removeClass 'section'
                 App.navigate "screen-two"
                 App.defaults['view'] = viewarrayValues.join(',')
                 App.currentStore.unit.reset UNITS
                 App.currentStore.building.reset BUILDINGS
                 App.currentStore.unit_type.reset UNITTYPES
                 App.currentStore.unit_variant.reset UNITVARIANTS
+                App.currentStore.terrace.reset TERRACEOPTIONS
+                App.currentStore.view.reset VIEWS
+                App.currentStore.facings.reset FACINGS
                 App.filter(params={})
                 $('.specialFilter').empty()
                 $('.specialFilter').addClass 'hidden'
@@ -1714,12 +2033,17 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 )
                 App.layout.screenThreeRegion.el.innerHTML = ""
                 App.layout.screenFourRegion.el.innerHTML = ""
+                $('#screen-three-region').removeClass 'section'
+                $('#screen-four-region').removeClass 'section'
                 App.navigate "screen-two"
                 App.defaults['facing'] = entrancearrayValues.join(',')
                 App.currentStore.unit.reset UNITS
                 App.currentStore.building.reset BUILDINGS
                 App.currentStore.unit_type.reset UNITTYPES
                 App.currentStore.unit_variant.reset UNITVARIANTS
+                App.currentStore.terrace.reset TERRACEOPTIONS
+                App.currentStore.view.reset VIEWS
+                App.currentStore.facings.reset FACINGS
                 App.filter(params={})
                 $('.specialFilter').empty()
                 $('.specialFilter').addClass 'hidden'
@@ -1764,12 +2088,17 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 )
                 App.layout.screenThreeRegion.el.innerHTML = ""
                 App.layout.screenFourRegion.el.innerHTML = ""
+                $('#screen-three-region').removeClass 'section'
+                $('#screen-four-region').removeClass 'section'
                 App.navigate "screen-two"
                 App.defaults['terrace'] = terracearrayValues.join(',')
                 App.currentStore.unit.reset UNITS
                 App.currentStore.building.reset BUILDINGS
                 App.currentStore.unit_type.reset UNITTYPES
                 App.currentStore.unit_variant.reset UNITVARIANTS
+                App.currentStore.terrace.reset TERRACEOPTIONS
+                App.currentStore.view.reset VIEWS
+                App.currentStore.facings.reset FACINGS
                 App.filter(params={})
                 $('.specialFilter').empty()
                 $('.specialFilter').addClass 'hidden'
@@ -1810,6 +2139,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
 
         events:
             'click .link':(e)->
+
                 #m = mapplic()
                 #m  = $('#mapplic1').data('mapplic')
                 id = @model.get('id')
@@ -1818,6 +2148,7 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 params = window['mapplic' + i]
                 selector = '#mapplic' + i
                 if @model.get('id') == undefined
+                    # $('#'@model.get('id')).removeAttr('href');
                     id = ""
                 @showHighlightedBuildings(id)
                 #m.initial($(selector),params)
@@ -1929,6 +2260,9 @@ define [ 'extm', 'marionette' ], ( Extm, Marionette )->
                 App.currentStore.building.reset BUILDINGS
                 App.currentStore.unit_type.reset UNITTYPES
                 App.currentStore.unit_variant.reset UNITVARIANTS
+                App.currentStore.terrace.reset TERRACEOPTIONS
+                App.currentStore.view.reset VIEWS
+                App.currentStore.facings.reset FACINGS
                 msgbus.showApp 'header'
                 .insideRegion  App.headerRegion
                     .withOptions()

@@ -2,6 +2,14 @@ define [ 'marionette'], ( Marionette )->
 
     class ApartmentSelector extends Marionette.AppRouter
 
+        initialize: ->
+            @bind 'route', @_trackPageview
+         
+        _trackPageview: ->
+            url = Backbone.history.getFragment()
+            ga('send', 'pageview', "/#{url}")
+        
+
         appRoutes:
             'wishList' :  'showpopup'
             'screen-four' : 'showSelectedUnit'
@@ -29,7 +37,7 @@ define [ 'marionette'], ( Marionette )->
             .insideRegion  App.headerRegion
                 .withOptions()
 
-             
+            
             App.backFilter['screen2'] = []
             App.backFilter['screen3'] = []
             App.layout.screenThreeRegion.el.innerHTML = ""

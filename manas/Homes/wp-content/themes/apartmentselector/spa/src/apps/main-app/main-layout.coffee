@@ -138,6 +138,68 @@ define [ 'extm'], ( Extm)->
                     </div>
                 </div>
             </div>
+
+            <div class="costsheetPrint special">
+                <div class="this-is">
+                    <h3 class="light">Estimated Cost for Flat No. <span class="text-primary flatno"></span> in <span class="text-primary building"></span></h3>
+                </div><!-- invoice headline -->
+
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h5>Prepared for:</h5>
+                        <span id="customerlabel" ></span>
+                    </div>
+                    <div class="col-sm-3">
+                        <h5>Prepared by:</h5>
+                        <h4 class="preparedby"></h4>
+                    </div>
+                    <div class="col-sm-3">
+                    </div>
+                    <div class="col-sm-3">
+                        <h5>Prepared on:</h5>
+                        <h4 class="preparedon"></h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h5 >Total Cost:</h5> <h4><span class="actualcost" data-a-sign="Rs. " data-d-group="2"></span></h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <h5>Current Milestone:</h5> <h4> <span class="currentmile"></span></h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <h5 >Amount Receivable as on Date:</h5> <h4><span class="rec" data-a-sign="Rs. " data-d-group="2"></span></h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h5>Payment Plan: </h5> <h4><span class="paymentplan"></span></h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <h5>Actual Payment:</h5> 
+                        <span class="actpayment" data-a-sign="Rs. " data-d-group=""></span></h4>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                </div>
+
+                <div id="costSheetTableprint">
+                </div>
+                <div class="invoice-items">
+                    <h4 class="text-primary">Payment Schedule</h4>
+                    <ul id="paymentTableprint">
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tandc text-center">
+                <h4 class="bold">Terms and Conditions</h4>
+                <h5>This website and its contents are purely conceptual and merely to assist reader to navigate into images, architectural drawings, area, price & other information only. Enerrgia SKYi does not take responsibility that may rise from any information given in this website. None of the objects/representation mentioned herein constitute a legally binding offer or invitation to treat. Enerrgia SKYi reserves right to add, delete, alter or in any manner change the plans, specifications, images, architectural drawings, prices, data & other information in its endeavour to make improvements as and when required without prior notice or obligation.</h5>
+                <p>To read full Terms &amp; Conditions, visit www.manaslake.com/terms-conditions</p>
+            </div>
+
         </div>
         
         <div id="screen-one-region" class="section">
@@ -212,7 +274,7 @@ define [ 'extm'], ( Extm)->
                 localStorage.setItem("cookievalue", App.cookieArray)
                 $('#errormsg' ).text ""
                 if App.cookieArray.length < 1
-                    $("#showRightPushs").addClass "hidden"
+                    $("#showRightPush").addClass "hidden"
                     menuRight = document.getElementById("cbp-spmenu-s2")
                     menuTop = document.getElementById("cbp-spmenu-s3")
                     showTop = document.getElementById("showTop")
@@ -409,6 +471,21 @@ define [ 'extm'], ( Extm)->
                 #verticalCentered: false
                 #easing: 'easeInOutQuad'
 
+            if "createTouch" of document
+              try
+                ignore = /:hover/
+                i = 0
+
+                while i < document.styleSheets.length
+                  sheet = document.styleSheets[i]
+                  j = sheet.cssRules.length - 1
+
+                  while j >= 0
+                    rule = sheet.cssRules[j]
+                    sheet.deleteRule j  if rule.type is CSSRule.STYLE_RULE and ignore.test(rule.selectorText)
+                    j--
+                  i++
+
             
             height = $(window).scrollTop()
 
@@ -452,7 +529,7 @@ define [ 'extm'], ( Extm)->
                     building = App.master.building.findWhere(id:model.get('building'))
                     table +='
                                 <li>
-                                    <a href="#" id="unit'+element+'" data-id="'+element+'" class="selectedunit">'+model.get('name')+'</a>
+                                    <a href="#" id="unit'+element+'" data-id="'+element+'" class="selectedunit">'+model.get('name')+' - '+building.get('name')+'</a>
                                     <a href="#" class="del" id="'+element+'" data-id="'+element+'"  ></a>
                                     <div class="clearfix"></div>
                                 </li>

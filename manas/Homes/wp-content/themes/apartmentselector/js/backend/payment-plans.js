@@ -1,4 +1,6 @@
-
+towerid = [];
+towerarr = [];
+towerstring= "";
 jQuery(document).ready(function($) {
     var collections = [];  
 
@@ -82,7 +84,9 @@ $(document).on("click", "#add-more-milstones", function(e) {
    
     cloneElement = $('#milestone-list li:first').html() ;
  
-    html = '<li class="sortable-items" id="sortable-items-'+nextItem+'">'+cloneElement.replace(/1/g,nextItem)+'</li>';
+    cloned = cloneElement.replace(/_1/g,"_"+nextItem)
+    cloned = cloned.replace(/-1/g,"-"+nextItem)
+    html = '<li class="sortable-items" id="sortable-items-'+nextItem+'">'+cloned+'</li>';
 
     $('#milestone-list').append(html);
 
@@ -129,28 +133,40 @@ $(document).on("click", "#save_payment_plan", function(e) {
 
             milestones = getSelectedMilstones();
 
-            if(milestones.length==0 && milestones!=false){
+            if(milestones.milestones.length==0 && milestones.return_status!=false){
                 showCustomError($("#add-more-milstones"),"Add atleast one milestone");
                 return;
-            }
-             if(milestones==false){
-                showCustomError($("#add-more-milstones"),"Add all selected milestone percentages");
-                return;
             } 
+             if(milestones.return_status==false){
+                showCustomError($("#add-more-milstones"),milestones.milestones);
+                return;
+            }  
 
-            if(sumMilstonePercentage(milestones)!=100){
+            if(sumMilstonePercentage(milestones.milestones)!=100){
                  showCustomError($("#add-more-milstones"),"Milestone percentages should add up to 100");
+                return;
+            }
+            console.log($('#apply').val()); 
+            console.log($('#towerstring').val()); 
+            if(parseInt($('#apply').val()) == 0 && $('#towerstring').val() == ""){
+                 showCustomError($("#add-more-milstones"),"Either select Towers or assign this milestone to all towers");
                 return;
             }
   
  
             $(e.target).hide().parent().append("<div class='loading-animator'></div>")
-
+            if(parseInt($('#apply').val()) == 1)
+                towers = $('#apply_arr').val()
+            else
+                towers = ""
             $.post(AJAXURL, {
                 action: "save_payment_plan",
                 payment_plan_name:  payment_plan_name, 
-                milestones:  milestones,  
-                payment_plan_id: payment_plan_id
+                milestones:  milestones.milestones,  
+                payment_plan_id: payment_plan_id,
+                towers: $('#towerstring').val(),
+                archive: $('#archive').val(),
+                buildingarr: towers
               }, function(response)  {
             if(payment_plan_id ==""){
 
@@ -183,6 +199,7 @@ function getSelectedMilstones(){
 
     sort = 0
     milestones = []
+    return_status = true;
     $('#milestone-list li').each(function(e,val) {
          
         milestone =  $(val).find('[name="milestone"]').val()  
@@ -192,15 +209,23 @@ function getSelectedMilstones(){
              milestones.push({sort_index:sort_index,milestone:milestone,payment_percentage:payment_percentage});
 
         }
+
+        if(milestone=="" || milestone =="+" ){
+             
+            milestones =  "Please fill in all the data";
+            return_status = false;
+            return false;
+        }
         if(milestone!="" && milestone !="+" && (payment_percentage==''  )){
              
-            milestones = false;
+            milestones = "Add all selected milestone percentages";
+            return_status =  false;
             return false;
         }
        
     });
 
-    return milestones;
+    return ({'milestones':milestones,'return_status':return_status});
 
 }
 
@@ -326,7 +351,7 @@ function sumMilstonePercentage(milestones){
  
         var _e = e
         clearAlerts();
-        payment_plan_name = $(e.target).parent().parent().children(':first-child').html() 
+        payment_plan_name = $(e.target).parent().parent().parent().children(':first-child').html() 
         confirmUserAction = confirm("Are you sure you want to delete payment plan "+payment_plan_name+" ?")
         if(confirmUserAction){
 
@@ -338,7 +363,7 @@ function sumMilstonePercentage(milestones){
 
         }, function(response) {
 
-            $(_e.target).parent().parent().remove();
+            $(_e.target).parent().parent().parent().remove();
 
             $(".grid-body").prepend('<div class="text-success">'+response.msg+'</div>')
              
@@ -346,7 +371,87 @@ function sumMilstonePercentage(milestones){
         }
           
     });
+    $(document).on("change", ".towervalue", function(e) {
+        console.log($('#towerstring').val());
+        tower = $('#towerstring').val().split(',')
+        towerid = []
+        $.each(tower,function(inde,value){
+            if(value !="")
+            towerid.push(parseInt(value));
+
+
+        })
+        
+        if($('#'+this.id).prop('checked') == true)
+            towerid.push(parseInt(this.value));
+        else{
+            index = towerid.indexOf(parseInt(this.value))
+            console.log(index);
+            if(index >= -1)
+                towerid.splice( index, 1 );
+
+    }
+    console.log(towerid);
+    $('#towerstring').val(towerid.join(',')) 
     
+    });
+
+    $(document).on("change", "#archive", function(e) {
+
+        if($('#'+this.id).prop('checked') == true)
+            $('#'+this.id).val('1')
+        else
+            $('#'+this.id).val('0')
+
+    
+       
+    });
+    $(document).on("click", "#apply", function(e) {
+         $('.error').text("");
+        $.each($('#apply_arr').val().split(','),function(index,value){
+            ($('#towervalue'+value).prop('checked',false));
+
+
+        })
+
+        if($('#'+this.id).prop('checked') == true){
+            $('#'+this.id).val('1')
+            
+            $('#display_towers').addClass('hidden')
+            $('#towerstring').val("")
+
+
+           
+            
+        }
+        else{
+           $('#display_towers').addClass('hidden')
+        }
+
+
+    
+       
+    });
+
+    $(document).on("click", "#showtowers", function(e) {
+
+        $('.error').text("");
+
+        if($('#'+this.id).prop('checked') == true){
+            $('#display_towers').removeClass('hidden')
+            
+            $('#apply').val('0')
+        }
+        else{
+            $('#display_towers').addClass('hidden')
+        }
+
+
+    
+       
+    });
 
 })
+
+    
 

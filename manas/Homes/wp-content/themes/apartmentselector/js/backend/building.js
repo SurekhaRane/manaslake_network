@@ -3,6 +3,8 @@ jQuery(document).ready(function($) {
     var collections = [];
     //load unit variants 
 
+ 
+
     $('.fileupload').each(function(e,val) { 
          
         file_field =  val.id.replace(/fileupload/g,'');
@@ -54,6 +56,26 @@ if($("#svg_position_file_4").length>0){
 if($("#slider").length!=0){
     displaySlider($("#no_of_floors").val())
 }
+
+
+ 
+
+      jQuery(".common-trash-image").on('click', function (e) { 
+ 
+    return_value = confirm('Are you sure you want to delete this image?')
+
+    if(return_value==true){
+        
+        jQuery('#image_display'+jQuery(e.target).attr('fileField')).attr('src','').hide()
+        jQuery('#'+jQuery(e.target).attr('fileField')).val('') 
+        jQuery("#"+jQuery(e.target).attr('fileField')+'trash-image-option').hide();
+
+    }else{
+        return
+    }
+
+
+  });
 
 $('.milestone-completion-date').datepicker({ dateFormat: 'dd/mm/yy' });
 
@@ -622,16 +644,20 @@ function addException(exception_no){
             }); 
 
    $(document).on("change", "#building_payment_plan", function(e) {
-
+ 
         $("#building_milestone").empty();
 
         $("#building_milestone").append(new Option("Select", ""));
+
+        selected_milestone = $("#building_payment_plan").attr('selected-milestone')
+
         if($(e.target).val()!=""){
  
         $.post(AJAXURL, {
             action: "get_payment_plan_milestones",
 
-            payment_plan: $("option:selected", $(e.target)).val()
+            payment_plan: $("option:selected", $(e.target)).val(),
+            buildingid:$('#buildingid').val()
         }, function(response) {
 
         sortedresponse = _.sortBy(response, function (obj) { 
@@ -640,10 +666,12 @@ function addException(exception_no){
         });
 
             $.each(sortedresponse, function(i, val) {
-                selected =  (i==0)?val.milestone:selected;
+              //  selected =  (i==0)?val.milestone:selected;
                 $("#building_milestone").append(new Option(val.name, val.milestone));
             });
-             $("#building_milestone").val(selected);
+             $("#building_milestone").val(selected_milestone);
+             console.log(selected_milestone)
+              $("#building_milestone").trigger('change')
               milestoneCompletionUi(sortedresponse);
         });
         }
@@ -722,6 +750,10 @@ function addException(exception_no){
             $(".flatposition"+i).remove()
         }
     }
+
+
+
+$("#building_payment_plan").trigger('change');
  
 })
 
